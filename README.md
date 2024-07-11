@@ -20,4 +20,4 @@
 
 ### AUTHORS
 - 기나혜(Ki nahye): Softwware developing, Project Manager | kinahae0331@tukorea.ac.kr
-- 김하연
+- 김하연(Kim ha yeon): Hardware developing, Team Leader | khy0228@tukorea.ac.kr
