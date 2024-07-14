@@ -1,8 +1,8 @@
 """ai_sprinkler_robot/crawler_dataportal.py
 
 This module defines a class for
-processing annual fire occurrence information collected
-from the Data Portal Site(https://www.data.go.kr/index.do).
+processing annual fire occurrence information
+collected from the Data Portal Site(https://www.data.go.kr/index.do).
 
 . _Google Python Style Guide:
    http://google.github.io/styleguide/pyguide.html
