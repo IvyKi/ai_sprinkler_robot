@@ -14,7 +14,7 @@ LED_pin = 2                     # LED pin is GPIO 2 on the Raspberry Pi
 GPIO.setup(LED_pin, GPIO.OUT)   # Set LED pin as output
 
 # Initialize the DHT22 sensor
-dhtDevice = adafruit_dht.DHT22(board.D2) #GPIO2
+dhtDevice = adafruit_dht.DHT22(board.D4) #GPIO4
 
 def safe_print(*args, **kwargs):
     """Prints safely, ignoring non-UTF-8 characters."""
