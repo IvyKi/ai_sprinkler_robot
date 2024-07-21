@@ -5,21 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e95ba3cf-3e57-4699-b144-80004f83b382" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/ai_sprinkler_robot/LICENSE" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ai_sprinkler_robot/README.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ai_sprinkler_robot/app.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ai_sprinkler_robot/communication.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ai_sprinkler_robot/compare.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ai_sprinkler_robot/crawler.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ai_sprinkler_robot/environment.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ai_sprinkler_robot/led.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ai_sprinkler_robot/robot/aim.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ai_sprinkler_robot/robot/camera.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ai_sprinkler_robot/robot/height.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ai_sprinkler_robot/robot/movement.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ai_sprinkler_robot/robot/obstacle.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ai_sprinkler_robot/sprinkler.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/ai_sprinkler_robot/trigger.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/crawler_fireagency.py" beforeDir="false" afterPath="$PROJECT_DIR$/crawler_fireagency.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/led.py" beforeDir="false" afterPath="$PROJECT_DIR$/led.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/trigger.py" beforeDir="false" afterPath="$PROJECT_DIR$/trigger.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,14 +30,14 @@
     <option name="sortByType" value="true" />
     <option name="sortKey" value="BY_TYPE" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;feature-week1&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/hp/Desktop/sandol&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "C:/Users/hp/Desktop/sandol",
+    "settings.editor.selected.configurable": "preferences.pluginManager"
   }
-}</component>
+}]]></component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
