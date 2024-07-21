@@ -6,10 +6,9 @@ except ImportError:
 import time                     # Import time module
 import board                    # Import board module for pin definitions
 import adafruit_dht             # Import Adafruit DHT sensor library
-
+from trigger import classname   #call class of trigeer.py
 GPIO.setmode(GPIO.BCM)          # Set GPIO pin numbering mode
-
-# Setup section: equivalent to Arduino's setup()
+quivalent to Arduino's setup()
 LED_pin = 2                     # LED pin is GPIO 2 on the Raspberry Pi
 GPIO.setup(LED_pin, GPIO.OUT)   # Set LED pin as output
 
@@ -22,13 +21,16 @@ def safe_print(*args, **kwargs):
         print(*args, **kwargs)
     except UnicodeEncodeError:
         print("Encoding error occurred while printing.")
-
+trigger_instance=classname()
 try:
-    while True:                         # Infinite loop: equivalent to Arduino's loop()
-        GPIO.output(LED_pin, GPIO.HIGH) # Turn on the LED
-        time.sleep(1)                   # Wait for 1 second
-        GPIO.output(LED_pin, GPIO.LOW)  # Turn off the LED
-        time.sleep(1)                   # Wait for 1 second
+    while True:
+        trigger_value=trigger_instacne.trigger_value()# Call trigger_value method of the Trigger class
+        if trigger_value==1:
+            GPIO.output(LED_pin, GPIO.HIGH) # Turn on the LED
+            time.sleep(1)                   # Wait for 1 second
+        else:
+            GPIO.output(LED_pin, GPIO.LOW)  # Turn off the LED
+            time.sleep(1)                   # Wait for 1 second
 
         try:
             temperature_c = dhtDevice.temperature
@@ -44,3 +46,5 @@ try:
 finally:                                # This block is executed when try block exits
     GPIO.cleanup()                      # Reset GPIO pins
 
+
+# Setup section: e
