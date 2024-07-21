@@ -5,22 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e95ba3cf-3e57-4699-b144-80004f83b382" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/crawler_dataportal.py" beforeDir="false" afterPath="$PROJECT_DIR$/crawler_dataportal.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/crawler_fireagency.py" beforeDir="false" afterPath="$PROJECT_DIR$/crawler_fireagency.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/led.py" beforeDir="false" afterPath="$PROJECT_DIR$/led.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/trigger.py" beforeDir="false" afterPath="$PROJECT_DIR$/trigger.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
-  </component>
-  <component name="FileTemplateManagerImpl">
-    <option name="RECENT_TEMPLATES">
-      <list>
-        <option value="Python Script" />
-      </list>
-    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -46,6 +40,7 @@
     "git-widget-placeholder": "feature-week1",
     "last_opened_file_path": "C:/Users/hp/Desktop/sandol",
     "settings.editor.selected.configurable": "configurable.group.tools"
+
   }
 }]]></component>
   <component name="SharedIndexes">
