@@ -32,10 +32,15 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "Python tests.Doctests in trigger.executor": "Run",
+    "Python.crawler_dataportal.executor": "Run",
+    "Python.crawler_fireagency.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "main",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "feature-week1",
     "last_opened_file_path": "C:/Users/hp/Desktop/sandol",
-    "settings.editor.selected.configurable": "preferences.pluginManager"
+    "settings.editor.selected.configurable": "configurable.group.tools"
+
   }
 }]]></component>
   <component name="SharedIndexes">
