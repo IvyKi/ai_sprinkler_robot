@@ -10,42 +10,6 @@ collected from the National Fire Agency(https://www.nfa.go.kr/nfa/).
 written by Choi Tae Hoon on 240713
 -- modified by Ki Na Hye on 240714
 """
-
-# fold_dir = "C:\\Users\\hihi5\\Downloads\\소방청_서울시 읍면동 단위 화재 발생 현황_20231012.csv"
-# data = pd.read_csv(fold_dir, encoding='cp949', skiprows=1, header=None)
-# numpy 배열로 변환
-# data = data.to_numpy()
-#
-# def sobang(data):
-#     # 파일 경로
-#
-#     # numpy 배열 출력
-#     real_data = data[:, 20:22]  # 온습도 데이를 따로 저장
-#     temp_data = real_data[:, 0]  # 온도데이터를 받은 변수
-#     humi_data = real_data[:, 1]  # 습도데이터 받은 변수
-#     temp_size = len(humi_data)
-#     humi_size = len(humi_data)
-#
-#     # print(temp_data[1])
-#     total_temp = 0;
-#     total_humi = 0;
-#     # 온도총합
-#     for i in range(0, temp_size, 1):
-#         if not np.isnan(temp_data[i]):
-#             total_temp += temp_data[i]
-#     # 습도총함
-#     for i in range(0, humi_size, 1):
-#         total_humi = total_humi + humi_data[i]
-#     average_temp = total_temp / temp_size
-#     average_humi = total_humi / humi_size
-#     average_temp = round(average_temp, 3)  # 온도평균을 소수점3자리까지표현
-#     average_humi = round(average_humi, 3)  # 습도평균을 소수점3자리까지표현
-#
-#     return total_humi, total_temp, average_temp, average_humi#총합온도 및 습도 값 확인해보려고 return포함시킴
-#
-#
-# total_humi, total_temp, average_temp, average_humi = sobang(data)
-
 import pandas as pd
 
 
@@ -97,6 +61,8 @@ class Fireagency:
         """
         Initializes an instance of Fireagency with empty attributes.
         """
+        self.monthly_avg_hum = None
+        self.monthly_avg_temp = None
         self.df = []            # Placeholder for the DataFrame
         self.col_m = []         # Placeholder for the 'Month' column
         self.col_d = []         # Placeholder for the 'Day' column
@@ -199,6 +165,58 @@ class Fireagency:
 
         return self.hum_data
 
+    def save_avg_temp(self):
+        """
+        Computes the monthly average temperature and humidity.
+
+        Returns:
+            tuple: A tuple containing two lists,
+            one for monthly average temperature and one for monthly average humidity.
+        """
+        self.load_file()
+
+        df1 = pd.DataFrame({
+            'Month': self.col_m,
+            'Day': self.col_d,
+            'Temperature': self.col_t,
+        })
+
+        monthly_avg_temp = (df1.groupby('Month')['Temperature']
+                            .mean()
+                            .reindex(range(1, 13), fill_value=0)
+                            .apply(lambda x: round(x, 2))
+                            .tolist())
+
+        self.monthly_avg_temp = monthly_avg_temp
+
+        return self.monthly_avg_temp
+
+    def save_avg_hum(self):
+        """
+        Computes the monthly average temperature and humidity.
+
+        Returns:
+            tuple: A tuple containing two lists,
+            one for monthly average temperature and one for monthly average humidity.
+        """
+        self.load_file()
+
+        df1 = pd.DataFrame({
+            'Month': self.col_m,
+            'Day': self.col_d,
+            'Humidity': self.col_h
+        })
+
+        monthly_avg_hum = (df1.groupby('Month')['Humidity']
+                           .mean()
+                           .reindex(range(1, 13), fill_value=0)
+                           .apply(lambda x: round(x, 2))
+                           .tolist())
+
+        self.monthly_avg_hum = monthly_avg_hum
+
+        return self.monthly_avg_hum
+
     def return_data(self):
         """
         Loads the data, computes monthly and daily data,
@@ -221,3 +239,8 @@ class Fireagency:
 
 if __name__ == '__main__':
     data = Fireagency()
+    data.load_file()
+    average_temp = data.save_avg_temp()
+    average_hum = data.save_avg_hum()
+    print(average_temp)
+    print(average_hum)
