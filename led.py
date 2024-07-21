@@ -6,14 +6,17 @@ except ImportError:
 import time                     # Import time module
 import board                    # Import board module for pin definitions
 import adafruit_dht             # Import Adafruit DHT sensor library
-from trigger import classname   #call class of trigeer.py
+import trigger                  # Import class from trigger.py
+
 GPIO.setmode(GPIO.BCM)          # Set GPIO pin numbering mode
-quivalent to Arduino's setup()
 LED_pin = 2                     # LED pin is GPIO 2 on the Raspberry Pi
 GPIO.setup(LED_pin, GPIO.OUT)   # Set LED pin as output
 
 # Initialize the DHT22 sensor
-dhtDevice = adafruit_dht.DHT22(board.D4) #GPIO4
+dhtDevice = adafruit_dht.DHT22(board.D4)    # GPIO4
+daytrigger = trigger.Daytrigger()       # month, day trigger
+envtrigger = trigger.Envtrigger()       # temperature, humidity trigger
+
 
 def safe_print(*args, **kwargs):
     """Prints safely, ignoring non-UTF-8 characters."""
@@ -21,16 +24,23 @@ def safe_print(*args, **kwargs):
         print(*args, **kwargs)
     except UnicodeEncodeError:
         print("Encoding error occurred while printing.")
-trigger_instance=classname()
+
+
 try:
     while True:
-        trigger_value=trigger_instacne.trigger_value()# Call trigger_value method of the Trigger class
-        if trigger_value==1:
-            GPIO.output(LED_pin, GPIO.HIGH) # Turn on the LED
-            time.sleep(1)                   # Wait for 1 second
+        # Call trigger_value method of the Trigger class
+        daytrigger.get_top_month()
+        daytrigger.get_top_day()
+        month_trigger, day_trigger = daytrigger.check_trigger()
+        env_temp_trigger = envtrigger.temp()
+        env_hum_trigger = envtrigger.hum()
+
+        if month_trigger and day_trigger:
+            GPIO.output(LED_pin, GPIO.HIGH)  # Turn on the LED
+            time.sleep(1)  # Wait for 1 second
         else:
             GPIO.output(LED_pin, GPIO.LOW)  # Turn off the LED
-            time.sleep(1)                   # Wait for 1 second
+            time.sleep(1)  # Wait for 1 second
 
         try:
             temperature_c = dhtDevice.temperature
@@ -45,6 +55,3 @@ try:
 
 finally:                                # This block is executed when try block exits
     GPIO.cleanup()                      # Reset GPIO pins
-
-
-# Setup section: e
