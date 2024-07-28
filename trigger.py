@@ -15,6 +15,7 @@ written by Choi Tae Hoon on 240713
 import crawler_dataportal
 import crawler_fireagency
 import datetime as dt
+import numpy as np
 
 
 class Daytrigger:
@@ -172,7 +173,7 @@ class Daytrigger:
         Example:
             >>> instance = Daytrigger()
             >>> instance.top_month = [1, 7, 12]
-            >>> instance.top_day = {1: [5, 10, 15], 7: [3, 7, 24], 12: [25, 30, 3]}
+            >>> instance.top_day = {1: [5, 10, 15], 7: [3, 7, 21], 12: [25, 30, 3]}
             >>> instance.check_trigger()
             (True, True)
         """
@@ -208,6 +209,8 @@ class Envtrigger:
         self.avg_hum_list = []
         self.temp_trigger = 0.0
         self.hum_trigger = 0.0
+        self.temp_deviation_value = 0.0
+        self.hum_deviation_value = 0.0
 
     def load_file(self):
         """
@@ -254,12 +257,52 @@ class Envtrigger:
 
         return self.hum_trigger
 
+    def hum_deviation(self):
+        """
+    Calculate the standard deviation of average monthly humidity.
+
+    Returns:
+        float: The standard deviation of average monthly humidity.
+    [44.29, 39.67, 49.5, 39.5, 41.79, 62.95, 63.69, 69.6, 58.88, 58.91, 58.89, 52.14]
+    predicted value->9.85
+
+"""
+        if not self.avg_hum_list:
+            self.load_file()
+        self.hum_deviation_value = np.std(self.avg_hum_list)
+        return self.hum_deviation_value
+
+    def temp_deviation(self):
+        """
+         Calculate the standard deviation of average monthly temperature.
+
+        Returns:
+                float: The standard deviation of average monthly temperature.
+        [-1.61, -0.15, 8.5, 15.81, 19.97, 23.16, 28.01, 25.91, 22.22, 14.51, 10.27, -2.95]
+        predicted value->10.41
+
+        """
+        if not self.avg_temp_list:
+            self.load_file()
+        self.temp_deviation_value = np.std(self.avg_temp_list)
+        return self.temp_deviation_value
+
 
 if __name__ == "__main__":
+
     example = Daytrigger()
     example2 = Envtrigger()
 
     hum_trigger = example2.hum()
+    temp_trigger = example2.temp()
+    temp_std_deviation = example2.temp_deviation()
+    hum_std_deviation = example2.hum_deviation()
 
     print(example2.avg_temp_list)
+    print(example2.avg_hum_list)
+
+    print(temp_trigger)
     print(hum_trigger)
+
+    print(temp_std_deviation)
+    print(hum_std_deviation)
