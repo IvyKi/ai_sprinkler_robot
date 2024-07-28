@@ -172,7 +172,7 @@ class Daytrigger:
         Example:
             >>> instance = Daytrigger()
             >>> instance.top_month = [1, 7, 12]
-            >>> instance.top_day = {1: [5, 10, 15], 7: [3, 7, 21], 12: [25, 30, 3]}
+            >>> instance.top_day = {1: [5, 10, 15], 7: [3, 7, 24], 12: [25, 30, 3]}
             >>> instance.check_trigger()
             (True, True)
         """
