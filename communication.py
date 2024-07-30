@@ -9,17 +9,6 @@ import datetime as dt
 import adafruit_dht
 import requests
 
-SENSOR_PIN = board.D2  # Modify to the actual GPIO pin used
-API_URL = "https://yscyyvxduwdfjldjnwus.supabase.co"  # Supabase RESTful API URL
-API_KEY = (
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
-    ".eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl"
-    "zY3l5dnhkdXdkZmpsZGpud3VzIiwicm9sZSI"
-    "6ImFub24iLCJpYXQiOjE3MjIwNjYxMTQsImV"
-    "4cCI6MjAzNzY0MjExNH0.22vV2RlrW9TU92Y"
-    "79SzuOQKX8v8IISBcaHePht-43Q4")  # Supabase project API key
-BEARER_TOKEN = ""  # Optional Bearer token
-
 
 class BoardComm:
     """A class to communicate with a DHT11 sensor and store data in a Supabase database.
@@ -114,5 +103,16 @@ class BoardComm:
 
 # Example usage
 if __name__ == "__main__":
+    SENSOR_PIN = board.D2  # Modify to the actual GPIO pin used
+    API_URL = "https://yscyyvxduwdfjldjnwus.supabase.co"  # Supabase RESTful API URL
+    API_KEY = (
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+        ".eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl"
+        "zY3l5dnhkdXdkZmpsZGpud3VzIiwicm9sZSI"
+        "6ImFub24iLCJpYXQiOjE3MjIwNjYxMTQsImV"
+        "4cCI6MjAzNzY0MjExNH0.22vV2RlrW9TU92Y"
+        "79SzuOQKX8v8IISBcaHePht-43Q4")  # Supabase project API key
+    BEARER_TOKEN = ""  # Optional Bearer token
+
     board_comm = BoardComm(SENSOR_PIN, API_URL, API_KEY, BEARER_TOKEN)
     board_comm.start()
