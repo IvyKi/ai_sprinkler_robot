@@ -11,6 +11,7 @@ and check if the current month and day are among the top periods.
 
 written by Choi Tae Hoon on 240713
 -- modified by Ki Na Hye on 240720
+-- featured by Choi Tae Hoon on 240730
 """
 import crawler_dataportal
 import crawler_fireagency

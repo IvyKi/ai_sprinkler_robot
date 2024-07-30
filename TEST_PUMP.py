@@ -5,17 +5,17 @@ except ImportError:
 
 import time                     # Importing time module
 
-#GPIO.setwarnings(False)         # Disabling GPIO warnings
+# GPIO.set warnings(False)         # Disabling GPIO warnings
 GPIO.setmode(GPIO.BCM)          # Setting the GPIO mode
 
 # Setup section
-PUMP_pin = 2                     # Assigning GPIO 2 to pump pin
-GPIO.setup(PUMP_pin, GPIO.OUT)   # Setting pump pin as output
+PUMP_PIN = 2                     # Assigning GPIO 2 to pump pin
+GPIO.setup(PUMP_PIN, GPIO.OUT)   # Setting pump pin as output
 
 # Loop section
 try:
-    GPIO.output(PUMP_pin, GPIO.HIGH) # Turning pump on
     while True:
+        GPIO.output(PUMP_PIN, GPIO.HIGH)  # Turning pump on
         time.sleep(1)                # Keeping the pump on indefinitely
 
 # Cleanup section
