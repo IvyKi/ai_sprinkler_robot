@@ -6,7 +6,7 @@ except ImportError:
 import time                     # Import time module
 import board                    # Import board module for pin definitions
 import adafruit_dht             # Import Adafruit DHT sensor library
-
+from communication import BoardComm
 GPIO.setmode(GPIO.BCM)          # Set GPIO pin numbering mode
 
 SENSOR = 4                     # LED pin is GPIO 2 on the Raspberry Pi
@@ -49,11 +49,13 @@ try:
             humidity = dhtDevice.humidity
             safe_print("Temp: {:.1f} F / {:.1f} C    Humidity: {}% ".format(
                 temperature_f, temperature_c, humidity))
+            board_comm = BoardComm(board.D15, API_URL, API_KEY, BEARER_TOKEN)
+            board_comm.start()
 
         except RuntimeError as error:
             # Handle sensor errors
             safe_print(error.args[0])
-            time.sleep(4.0)
+        time.sleep(4.0)
 
 finally:                                # This block is executed when try block exits
     GPIO.cleanup()
