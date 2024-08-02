@@ -10,6 +10,7 @@ import trigger                  # Import class from trigger.py
 from communication import BoardComm
 
 GPIO.setmode(GPIO.BCM)          # Set GPIO pin numbering mode
+<<<<<<< HEAD
 SENSOR = 2                     # LED pin is GPIO 2 on the Raspberry Pi
 GPIO.setup(SENSOR, GPIO.OUT)   # Set LED pin as output
 PUMP = 3                     # Assigning GPIO 2 to pump pin
@@ -24,9 +25,13 @@ API_KEY = (
         "79SzuOQKX8v8IISBcaHePht-43Q4")  # Supabase project API key
 BEARER_TOKEN = ""  # Optional Bearer token
 
+=======
+LED_pin = 3                     # LED pin is GPIO 3 on the Raspberry Pi
+GPIO.setup(LED_pin, GPIO.OUT)   # Set LED pin as output
+>>>>>>> c72f5eb9e5c4aa7490ccc24922b97354143b7088
 
 # Initialize the DHT22 sensor
-dhtDevice = adafruit_dht.DHT22(board.D4)    # GPIO4
+dhtDevice = adafruit_dht.DHT22(board.D2)    # GPIO2
 daytrigger = trigger.Daytrigger()       # month, day trigger
 envtrigger = trigger.Envtrigger()       # temperature, humidity trigger
 

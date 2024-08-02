@@ -1,23 +1,22 @@
-try:
-    import RPi.GPIO as GPIO     # Importing Raspberry Pi GPIO module
-except ImportError:
-    from mock_gpio import GPIO  # Importing mock GPIO module
+import RPi.GPIO as GPIO
+import time
 
-import time                     # Importing time module
+# GPIO pin setup
+PUMP_PIN = 2
 
-# GPIO.set warnings(False)         # Disabling GPIO warnings
-GPIO.setmode(GPIO.BCM)          # Setting the GPIO mode
+# GPIO initialization
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(PUMP_PIN, GPIO.OUT)
 
-# Setup section
-PUMP_PIN = 2                     # Assigning GPIO 2 to pump pin
-GPIO.setup(PUMP_PIN, GPIO.OUT)   # Setting pump pin as output
-
-# Loop section
 try:
     while True:
         GPIO.output(PUMP_PIN, GPIO.HIGH)  # Turning pump on
-        time.sleep(1)                # Keeping the pump on indefinitely
+        time.sleep(5)                     # Keep the pump on for 5 seconds
+        GPIO.output(PUMP_PIN, GPIO.LOW)   # Turning pump off
+        time.sleep(1)                     # Keep the pump off for 1 second
 
-# Cleanup section
 finally:
-    GPIO.cleanup()                   # Cleaning up GPIO
+    # GPIO cleanup
+    GPIO.cleanup()
+    print("GPIO cleanup complete")
