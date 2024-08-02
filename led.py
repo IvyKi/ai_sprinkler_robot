@@ -7,10 +7,23 @@ import time                     # Import time module
 import board                    # Import board module for pin definitions
 import adafruit_dht             # Import Adafruit DHT sensor library
 import trigger                  # Import class from trigger.py
+from communication import BoardComm
 
 GPIO.setmode(GPIO.BCM)          # Set GPIO pin numbering mode
-LED_pin = 2                     # LED pin is GPIO 2 on the Raspberry Pi
-GPIO.setup(LED_pin, GPIO.OUT)   # Set LED pin as output
+SENSOR = 2                     # LED pin is GPIO 2 on the Raspberry Pi
+GPIO.setup(SENSOR, GPIO.OUT)   # Set LED pin as output
+PUMP = 3                     # Assigning GPIO 2 to pump pin
+GPIO.setup(PUMP, GPIO.OUT)
+API_URL = "https://yscyyvxduwdfjldjnwus.supabase.co"  # Supabase RESTful API URL
+API_KEY = (
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+        ".eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl"
+        "zY3l5dnhkdXdkZmpsZGpud3VzIiwicm9sZSI"
+        "6ImFub24iLCJpYXQiOjE3MjIwNjYxMTQsImV"
+        "4cCI6MjAzNzY0MjExNH0.22vV2RlrW9TU92Y"
+        "79SzuOQKX8v8IISBcaHePht-43Q4")  # Supabase project API key
+BEARER_TOKEN = ""  # Optional Bearer token
+
 
 # Initialize the DHT22 sensor
 dhtDevice = adafruit_dht.DHT22(board.D4)    # GPIO4
@@ -28,6 +41,9 @@ def safe_print(*args, **kwargs):
 
 try:
     while True:
+        GPIO.output(PUMP, GPIO.HIGH)  # Turning pump on
+        time.sleep(1)
+
         # Call trigger_value method of the Trigger class
         daytrigger.get_top_month()
         daytrigger.get_top_day()
@@ -36,10 +52,10 @@ try:
         env_hum_trigger = envtrigger.hum()
 
         if month_trigger and day_trigger:
-            GPIO.output(LED_pin, GPIO.HIGH)  # Turn on the LED
+            GPIO.output(SENSOR, GPIO.HIGH)  # Turn on the LED
             time.sleep(1)  # Wait for 1 second
         else:
-            GPIO.output(LED_pin, GPIO.LOW)  # Turn off the LED
+            GPIO.output(SENSOR, GPIO.LOW)  # Turn off the LED
             time.sleep(1)  # Wait for 1 second
 
         try:
@@ -48,6 +64,8 @@ try:
             humidity = dhtDevice.humidity
             safe_print("Temp: {:.1f} F / {:.1f} C    Humidity: {}% ".format(
                 temperature_f, temperature_c, humidity))
+            board_comm = BoardComm(board.D2, API_URL, API_KEY, BEARER_TOKEN)
+            board_comm.start()
         except RuntimeError as error:
             # Handle sensor errors
             safe_print(error.args[0])

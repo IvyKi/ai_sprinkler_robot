@@ -5,9 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3382586a-ea2c-4def-94f9-9a34907ac51a" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TEST_PUMP.py" beforeDir="false" afterPath="$PROJECT_DIR$/TEST_PUMP.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/trigger.py" beforeDir="false" afterPath="$PROJECT_DIR$/trigger.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/led.py" beforeDir="false" afterPath="$PROJECT_DIR$/led.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -38,18 +38,19 @@
     <option name="sortByType" value="true" />
     <option name="sortKey" value="BY_TYPE" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Python tests.Doctests in trigger.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_led.TestLED.test_led_control.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests in test_led.py.executor&quot;: &quot;Run&quot;,
-    &quot;Python.communication.executor&quot;: &quot;Run&quot;,
-    &quot;Python.crawler_fireagency.executor&quot;: &quot;Run&quot;,
-    &quot;Python.led.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;feature-week2&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python tests.Doctests in trigger.executor": "Run",
+    "Python tests.Python tests for test_led.TestLED.test_led_control.executor": "Run",
+    "Python tests.Python tests in test_led.py.executor": "Run",
+    "Python.communication.executor": "Run",
+    "Python.crawler_fireagency.executor": "Run",
+    "Python.led.executor": "Run",
+    "Python.test_app.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "feature-week2"
   }
-}</component>
+}]]></component>
   <component name="RunManager">
     <configuration name="Python tests for test_led.TestLED.test_led_control" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
       <module name="ai_sprinkler_robot" />
