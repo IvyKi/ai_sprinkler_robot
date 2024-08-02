@@ -9,11 +9,11 @@ import adafruit_dht             # Import Adafruit DHT sensor library
 import trigger                  # Import class from trigger.py
 
 GPIO.setmode(GPIO.BCM)          # Set GPIO pin numbering mode
-LED_pin = 2                     # LED pin is GPIO 2 on the Raspberry Pi
+LED_pin = 3                     # LED pin is GPIO 3 on the Raspberry Pi
 GPIO.setup(LED_pin, GPIO.OUT)   # Set LED pin as output
 
 # Initialize the DHT22 sensor
-dhtDevice = adafruit_dht.DHT22(board.D4)    # GPIO4
+dhtDevice = adafruit_dht.DHT22(board.D2)    # GPIO2
 daytrigger = trigger.Daytrigger()       # month, day trigger
 envtrigger = trigger.Envtrigger()       # temperature, humidity trigger
 
