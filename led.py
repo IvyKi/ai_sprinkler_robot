@@ -6,7 +6,7 @@ except ImportError:
 import time                     # Import time module
 import board                    # Import board module for pin definitions
 import adafruit_dht             # Import Adafruit DHT sensor library
-import trigger                  # Import class from trigger.py
+# import trigger                  # Import class from trigger.py
 from communication import BoardComm
 
 GPIO.setmode(GPIO.BCM)          # Set GPIO pin numbering mode
@@ -32,8 +32,8 @@ GPIO.setup(LED_pin, GPIO.OUT)   # Set LED pin as output
 
 # Initialize the DHT22 sensor
 dhtDevice = adafruit_dht.DHT22(board.D2)    # GPIO2
-daytrigger = trigger.Daytrigger()       # month, day trigger
-envtrigger = trigger.Envtrigger()       # temperature, humidity trigger
+# daytrigger = trigger.Daytrigger()       # month, day trigger
+# envtrigger = trigger.Envtrigger()       # temperature, humidity trigger
 
 
 def safe_print(*args, **kwargs):
@@ -48,7 +48,15 @@ try:
     while True:
         GPIO.output(PUMP, GPIO.HIGH)  # Turning pump on
         time.sleep(1)
+        GPIO.output(SENSOR, GPIO.HIGH)  # Turn on the LED
+        time.sleep(1)
+        GPIO.output(SENSOR, GPIO.LOW)  # Turn off the LED
+        time.sleep(1)
 
+        board_comm = BoardComm(board.D2, API_URL, API_KEY, BEARER_TOKEN)
+        board_comm.start()
+
+        /*
         # Call trigger_value method of the Trigger class
         daytrigger.get_top_month()
         daytrigger.get_top_day()
@@ -69,8 +77,7 @@ try:
             humidity = dhtDevice.humidity
             safe_print("Temp: {:.1f} F / {:.1f} C    Humidity: {}% ".format(
                 temperature_f, temperature_c, humidity))
-            board_comm = BoardComm(board.D2, API_URL, API_KEY, BEARER_TOKEN)
-            board_comm.start()
+        */
         except RuntimeError as error:
             # Handle sensor errors
             safe_print(error.args[0])
