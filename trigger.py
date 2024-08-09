@@ -86,11 +86,11 @@ class Daytrigger:
             - The dictionary `self.top_month` is updated with the top 3 months
                 and their frequencies before being returned.
 
-        Example:
-            >>> trig = Daytrigger()
-            >>> trig.get_top_month()
-            {3: 311, 4: 285, 2: 254}
-        """
+        # Example:
+        #     >>> trig = Daytrigger()
+        #     >>> trig.get_top_month()
+        #     {3: 311, 4: 285, 2: 254}
+        # """
         self.load_file()
 
         month_frequencies = []
@@ -130,11 +130,11 @@ class Daytrigger:
                     with the highest fire occurrences in that month.
                     Each tuple contains the day (int) and the frequency of fires (int).
 
-        Example:
-            >>> data = crawler_dataportal.Dataportal()
-            >>> trig = Daytrigger()
-            >>> top_day_list = trig.get_top_day()
-        """
+        # Example:
+        #     >>> data = crawler_dataportal.Dataportal()
+        #     >>> trig = Daytrigger()
+        #     >>> top_day_list = trig.get_top_day()
+        # """
         self.load_file()
 
         day_frequencies = []
@@ -171,12 +171,12 @@ class Daytrigger:
                 - `month_trigger` (bool): True if `current_month` is one of the top months
                 - `day_trigger` (bool): True if `current_day` is one of the top days within the `current_month
 
-        Example:
-            >>> instance = Daytrigger()
-            >>> instance.top_month = [1, 7, 12]
-            >>> instance.top_day = {1: [5, 10, 15], 7: [3, 7, 21], 12: [25, 30, 3]}
-            >>> instance.check_trigger()
-            (True, True)
+        # Example:
+        #     >>> instance = Daytrigger()
+        #     >>> instance.top_month = [1, 8, 12]
+        #     >>> instance.top_day = {1: [5, 10, 15], 8: [3, 8, 21], 12: [25, 30, 3]}
+        #     >>> instance.check_trigger()
+        #     (True, True)
         """
         today = dt.datetime.today()
 
@@ -208,10 +208,10 @@ class Envtrigger:
         self.hum_list = []
         self.avg_temp_list = []
         self.avg_hum_list = []
-        self.temp_trigger = 0.0
-        self.hum_trigger = 0.0
-        self.temp_deviation_value = 0.0
-        self.hum_deviation_value = 0.0
+        self.temp_trigger = 0
+        self.hum_trigger = 0
+        self.temp_devi = 0.0
+        self.hum_devi = 0.0
 
     def load_file(self):
         """
@@ -241,7 +241,7 @@ class Envtrigger:
         self.load_file()
 
         today = dt.datetime.today()
-        self.temp_trigger = self.avg_temp_list[today.month - 1]
+        self.temp_trigger = int(self.avg_temp_list[today.month - 1]*100)
 
         return self.temp_trigger
 
@@ -254,7 +254,7 @@ class Envtrigger:
         self.load_file()
 
         today = dt.datetime.today()
-        self.hum_trigger = self.avg_hum_list[today.month-1]
+        self.hum_trigger = int(self.avg_hum_list[today.month-1]*100)
 
         return self.hum_trigger
 
@@ -270,8 +270,8 @@ class Envtrigger:
 """
         if not self.avg_hum_list:
             self.load_file()
-        self.hum_deviation_value = np.std(self.avg_hum_list)
-        return self.hum_deviation_value
+        self.hum_devi = np.std(self.avg_hum_list)
+        return self.hum_devi
 
     def temp_deviation(self):
         """
@@ -285,8 +285,8 @@ class Envtrigger:
         """
         if not self.avg_temp_list:
             self.load_file()
-        self.temp_deviation_value = np.std(self.avg_temp_list)
-        return self.temp_deviation_value
+        self.temp_devi = np.std(self.avg_temp_list)
+        return self.temp_devi
 
 
 if __name__ == "__main__":

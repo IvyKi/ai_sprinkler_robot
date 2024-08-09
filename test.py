@@ -15,7 +15,7 @@ import atexit
 dhtDevice = adafruit_dht.DHT22(board.D4)
 
 SENSOR = 4  # LED pin is GPIO 4 on the Raspberry Pi
-# PUMP = 3  # Assigning GPIO 3 to pump pin
+PUMP = 3  # Assigning GPIO 3 to pump pin
 
 API_URL = "https://yscyyvxduwdfjldjnwus.supabase.co"  # Supabase RESTful API URL
 API_KEY = (
@@ -28,11 +28,13 @@ API_KEY = (
 )
 TABLE_NAME = "sprinkler_get"  # Supabase table name
 
+
 def initialize_gpio():
     GPIO.cleanup()  # Initialize all GPIO ports
     GPIO.setmode(GPIO.BCM)  # Set GPIO pin numbering mode
     GPIO.setup(SENSOR, GPIO.OUT)  # Set SENSOR pin as output
     # GPIO.setup(PUMP, GPIO.OUT)  # Set pump pin as output
+
 
 def safe_print(*args, **kwargs):
     """Prints safely, ignoring non-UTF-8 characters."""
@@ -40,6 +42,7 @@ def safe_print(*args, **kwargs):
         print(*args, **kwargs)
     except UnicodeEncodeError:
         print("Encoding error occurred while printing.")
+
 
 def send_to_supabase(temp: float, humi: float):
     url = f"{API_URL}/rest/v1/{TABLE_NAME}"
@@ -59,6 +62,7 @@ def send_to_supabase(temp: float, humi: float):
         safe_print("Data sent successfully")
     else:
         safe_print(f"Failed to send data: {response.text}")
+
 
 # Ensure cleanup is called on script exit
 atexit.register(GPIO.cleanup)
