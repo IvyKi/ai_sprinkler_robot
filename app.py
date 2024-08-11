@@ -11,19 +11,23 @@ import json  # Import json module for data formatting
 import datetime as dt
 import atexit
 
-SENSOR = 4  # LED pin is GPIO 4 on the Raspberry Pi
+SENSOR = [4, 17, 27, 22]  # LED pin is GPIO 4 on the Raspberry Pi
 PUMP = 3  # Assigning GPIO 3 to pump pin
+MOTOR = 10
 
-API_URL = "https://yscyyvxduwdfjldjnwus.supabase.co"  # Supabase RESTful API URL
+# Supabase RESTful API URL
+API_URL = "https://yscyyvxduwdfjldjnwus.supabase.co"
+# Supabase project API key
 API_KEY = (
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
     ".eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl"
     "zY3l5dnhkdXdkZmpsZGpud3VzIiwicm9sZSI"
     "6ImFub24iLCJpYXQiOjE3MjIwNjYxMTQsImV"
     "4cCI6MjAzNzY0MjExNH0.22vV2RlrW9TU92Y"
-    "79SzuOQKX8v8IISBcaHePht-43Q4"  # Supabase project API key
+    "79SzuOQKX8v8IISBcaHePht-43Q4"
 )
-TABLE_NAME = "sprinkler_get"  # Supabase table name
+# Supabase table name
+TABLE_NAME = ["action_log", "sprinkler_get", "sprinkler_get2", "sprinkler_get3", "sprinkler_get4"]
 
 
 def initialize_gpio():

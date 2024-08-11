@@ -10,7 +10,8 @@ API_KEY = (
     "6ImFub24iLCJpYXQiOjE3MjIwNjYxMTQsImV"
     "4cCI6MjAzNzY0MjExNH0.22vV2RlrW9TU92Y"
     "79SzuOQKX8v8IISBcaHePht-43Q4")
-TABLE = "sprinkler_get"
+TABLE = ["action_log", "sprinkler_get", "sprinkler_get2", "sprinkler_get3", "sprinkler_get4"]
+PORT_NUM = [3, 4, 17, 27, 22]   # pump: 3, sensor: 4, 17, 27, 22
 TODAY = dt.datetime.today()
 
 
@@ -43,13 +44,20 @@ class Compare:
         self.time = []
         self.temp = []
         self.hum = []
+        self.number = 0
         self.comp_temp = None
         self.comp_hum = None
+
+    def select_num(self, number):
+        if number:
+            self.number = number
+        else:
+            self.number = 0
 
     def load_data(self):
         """Loads data from the Supabase table and populates the class attributes."""
         supabase: Client = create_client(API_URL, API_KEY)
-        response = supabase.table(TABLE).select("*").execute()
+        response = supabase.table(TABLE[self.number]).select("*").execute()
         data = response.data
 
         self.day = [row["day"] for row in data]
