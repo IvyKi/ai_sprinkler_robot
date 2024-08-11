@@ -5,11 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e95ba3cf-3e57-4699-b144-80004f83b382" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/crawler_fireagency.py" beforeDir="false" afterPath="$PROJECT_DIR$/crawler_fireagency.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/led.py" beforeDir="false" afterPath="$PROJECT_DIR$/led.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/trigger.py" beforeDir="false" afterPath="$PROJECT_DIR$/trigger.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -37,10 +34,9 @@
     "Python.crawler_fireagency.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "feature-week1",
+    "git-widget-placeholder": "main",
     "last_opened_file_path": "C:/Users/hp/Desktop/sandol",
     "settings.editor.selected.configurable": "configurable.group.tools"
-
   }
 }]]></component>
   <component name="SharedIndexes">
