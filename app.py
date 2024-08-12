@@ -38,13 +38,11 @@ dht_sensors = {
     SENSOR_PINS[3]: adafruit_dht.DHT11(board.D22),  # DHT11 sensor
 }
 
-
 def initialize_gpio():
     GPIO.cleanup()  # Initialize all GPIO ports
     GPIO.setmode(GPIO.BCM)  # Set GPIO pin numbering mode
     GPIO.setup(SENSOR_PINS, GPIO.OUT)  # Set SENSOR pins as output
     GPIO.setup(PUMP, GPIO.OUT)  # Set PUMP pin as output
-
 
 def safe_print(*args, **kwargs):
     """Prints safely, ignoring non-UTF-8 characters."""
@@ -52,7 +50,6 @@ def safe_print(*args, **kwargs):
         print(*args, **kwargs)
     except UnicodeEncodeError:
         print("Encoding error occurred while printing.")
-
 
 def send_to_supabase(temp: float, humi: float, sensor_id: int):
     url = f"{API_URL}/rest/v1/{TABLE_NAME[sensor_id]}"
@@ -73,6 +70,26 @@ def send_to_supabase(temp: float, humi: float, sensor_id: int):
     else:
         safe_print(f"Failed to send data for sensor {sensor_id + 1}: {response.text}")
 
+def check_sensor_conditions():
+    for i, pin in enumerate(SENSOR_PINS):
+        try:
+            dhtDevice = dht_sensors[pin]
+            temperature_c = dhtDevice.temperature
+            humidity = dhtDevice.humidity
+            
+            if temperature_c >= 20 and humidity >= 20:
+                safe_print(
+                    f"Sensor {i + 1} meets the condition - Temp: {temperature_c:.1f} C, Humidity: {humidity}%"
+                )
+                send_to_supabase(temperature_c, humidity, i)
+                return i + 1  # Return the sensor number that meets the condition
+
+        except RuntimeError as error:
+            # Handle sensor errors
+            safe_print(error.args[0])
+        time.sleep(2.0)
+
+    return None  # Return None if no sensor meets the condition
 
 # Ensure cleanup is called on script exit
 atexit.register(GPIO.cleanup)
@@ -82,32 +99,16 @@ initialize_gpio()
 
 try:
     while True:
-        GPIO.output(PUMP, GPIO.HIGH)  # Turning pump on
-        GPIO.output(SENSOR_PINS, GPIO.HIGH)  # Turning all sensors on
-        time.sleep(3)  # Keep the sensors on for 3 seconds
-        GPIO.output(SENSOR_PINS, GPIO.LOW)  # Turning all sensors off
-        GPIO.output(PUMP, GPIO.LOW)  # Turning pump off
-        time.sleep(1)
+        result = check_sensor_conditions()
+        if result is not None:
+            GPIO.output(PUMP, GPIO.HIGH)  # Turn pump on if condition is satisfied
+            safe_print(f"Sensor {result} satisfied the condition. Pump is ON.")
+            time.sleep(3)  # Keep the pump on for 3 seconds
+            GPIO.output(PUMP, GPIO.LOW)  # Turn pump off
+        else:
+            safe_print("No sensor satisfied the condition. Pump remains OFF.")
 
-        for i, pin in enumerate(SENSOR_PINS):
-            try:
-                dhtDevice = dht_sensors[pin]
-                temperature_c = dhtDevice.temperature
-                temperature_f = temperature_c * (9 / 5) + 32
-                humidity = dhtDevice.humidity
-                safe_print(
-                    "Sensor {} - Temp: {:.1f} F / {:.1f} C    Humidity: {}% ".format(
-                        i + 1, temperature_f, temperature_c, humidity
-                    )
-                )
-
-                # Send data to Supabase
-                send_to_supabase(temperature_c, humidity, i)
-
-            except RuntimeError as error:
-                # Handle sensor errors
-                safe_print(error.args[0])
-            time.sleep(2.0)
+        time.sleep(2.0)
 
 finally:  # This block is executed when the try block exits
     GPIO.cleanup()  # Clean up GPIO settings
