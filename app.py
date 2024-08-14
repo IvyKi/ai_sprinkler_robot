@@ -11,10 +11,10 @@ import json  # Import json module for data formatting
 import datetime as dt
 import atexit
 
-# Pin numbers for each sensor
+# Pins for each sensor
 SENSOR_PINS = [4, 17, 27, 22]  # DHT22 on GPIO 4, DHT11 on GPIO 17, 27, 22
-PUMP = 3  # Pin number for the pump
-MOTOR = 10  # Pin number for the motor (not used)
+PUMP = 3  # Pins for the pump
+MOTOR = 10  # Pins for the motor (not used)
 
 # Supabase RESTful API URL
 API_URL = "https://yscyyvxduwdfjldjnwus.supabase.co"
