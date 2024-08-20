@@ -12,9 +12,9 @@ import datetime as dt
 import atexit
 
 # Pins for each sensor
-SENSOR_PINS = [4, 17, 27, 22]  # DHT22 on GPIO 4, DHT11 on GPIO 17, 27, 22
+SENSOR_PINS = [4, 17, 27]  # DHT22 on GPIO 4, DHT11 on GPIO 17, 27
 PUMP = 3  # Pins for the pump
-MOTOR = 10  # Pins for the motor (not used)
+MOTOR = 10  # Pin for the SG90 motor
 
 # Supabase RESTful API URL
 API_URL = "https://yscyyvxduwdfjldjnwus.supabase.co"
@@ -27,20 +27,18 @@ API_KEY = (
     "4cCI6MjAzNzY0MjExNH0.22vV2RlrW9TU92Y"
     "79SzuOQKX8v8IISBcaHePht-43Q4"
 )
-# Supabase table nam    es
-TABLE_NAME = ["action_log", "sprinkler_get", "sprinkler_get2", "sprinkler_get3", "sprinkler_get4"]
+# Supabase table names
+TABLE_NAME = ["action_log", "sprinkler_get", "sprinkler_get2", "sprinkler_get3"]
 
 # Initialize each sensor
 dht_sensors = {
     SENSOR_PINS[0]: adafruit_dht.DHT22(board.D4),  # DHT22 sensor
     SENSOR_PINS[1]: adafruit_dht.DHT11(board.D17),  # DHT11 sensor
     SENSOR_PINS[2]: adafruit_dht.DHT11(board.D27),  # DHT11 sensor
-    SENSOR_PINS[3]: adafruit_dht.DHT11(board.D22),  # DHT11 sensor
 }
 
-
-dictionary = {1: 0, 2: 90, 3: 180, 4: 270}  # Mapping of sensor numbers to motor angles
-
+# Updated motor angle dictionary
+dictionary = {1: -90, 2: 0, 3: 90}  # Mapping of sensor numbers to motor angles
 
 def initialize_gpio():
     GPIO.cleanup()  # Initialize all GPIO ports
@@ -48,7 +46,17 @@ def initialize_gpio():
     GPIO.setup(SENSOR_PINS, GPIO.OUT)  # Set SENSOR pins as output
     GPIO.setup(PUMP, GPIO.OUT)  # Set PUMP pin as output
     GPIO.setup(MOTOR, GPIO.OUT)  # Set MOTOR pin as output
+    global pwm
+    pwm = GPIO.PWM(MOTOR, 50)  # Set PWM for SG90 motor at 50Hz
+    pwm.start(0)  # Start PWM with a duty cycle of 0
 
+def set_angle(angle):
+    duty = 2 + (angle / 18)  # Convert angle to duty cycle
+    GPIO.output(MOTOR, True)
+    pwm.ChangeDutyCycle(duty)
+    time.sleep(0.5)
+    GPIO.output(MOTOR, False)
+    pwm.ChangeDutyCycle(0)  # Stop the motor by setting duty cycle to 0
 
 def safe_print(*args, **kwargs):
     """Prints safely, ignoring non-UTF-8 characters."""
@@ -56,7 +64,6 @@ def safe_print(*args, **kwargs):
         print(*args, **kwargs)
     except UnicodeEncodeError:
         print("Encoding error occurred while printing.")
-
 
 def send_to_supabase(temp: float, humi: float, sensor_id: int):
     url = f"{API_URL}/rest/v1/{TABLE_NAME[sensor_id]}"
@@ -76,7 +83,6 @@ def send_to_supabase(temp: float, humi: float, sensor_id: int):
         safe_print(f"Data sent successfully for sensor {sensor_id + 1}")
     else:
         safe_print(f"Failed to send data for sensor {sensor_id + 1}: {response.text}")
-
 
 def check_sensor_conditions():
     triggered_sensors = []
@@ -99,33 +105,16 @@ def check_sensor_conditions():
         time.sleep(2.0)
     return triggered_sensors
 
-
 def motor_angle(sensor_list):
-    current_position = 0   # Initialize the current angle of the motor
-
     for sensor_number in sensor_list:
-        target_angle = dictionary[sensor_number]  # Get the target angle corresponding to the sensor number기
-        movement = target_angle - current_position
-        safe_print(f"Moving motor from {current_position}° to {target_angle}° ({movement}° movement)")
+        target_angle = dictionary[sensor_number]  # Get the target angle corresponding to the sensor number
+        safe_print(f"Moving motor to {target_angle}°")
+        set_angle(target_angle)  # Move motor to the target angle
 
-        time.sleep(abs(movement) / 90)  # Delay time based on rotation speed
-        current_position = target_angle
+        # Move back to 0 degrees after reaching the target angle
+        safe_print("Returning motor to 0°")
+        set_angle(0)
 
-
-""" 
-This part is based on the assumption that the motor takes a certain amount of time to rotate 90 degrees.
-The code assumes that the motor rotates at a constant speed and knows how long it takes to rotate 90 degrees.
-example, if we assume that the motor takes 1 second to rotate 90 degrees, 
-then when 'movement' is 90 degrees, 'time.sleep(1)' will be executed to wait for 1 second.
-If 'movement' is 45 degrees, 'time.sleep(0.5)' will be executed to wait for the time needed for the motor to 
-rotate 45 degrees.This method operates under the assumption that the motor's rotation speed is constant.
-For instance, if the motor takes 1 second to rotate 90 degrees:
-When 'movement' is 90 degrees: 'time.sleep(1)' is executed, and the program waits for 1 second.
-When 'movement' is 45 degrees: 'time.sleep(0.5)' is executed, and the program waits for 0.5 seconds.
-"""
-
-
-# Ensure cleanup is called on script exit
 atexit.register(GPIO.cleanup)
 
 # Initialize GPIO
@@ -134,7 +123,7 @@ initialize_gpio()
 try:
     while True:
         result = check_sensor_conditions()
-        if result is not None:
+        if result:
             motor_angle(result)
             GPIO.output(PUMP, GPIO.HIGH)  # Turn pump on if condition is satisfied
             safe_print(f"Sensor {result} satisfied the condition. Pump is ON.")
@@ -146,4 +135,5 @@ try:
         time.sleep(2.0)
 
 finally:  # This block is executed when the try block exits
+    pwm.stop()  # Stop PWM
     GPIO.cleanup()  # Clean up GPIO settings
