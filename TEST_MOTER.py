@@ -1,4 +1,7 @@
-import RPi.GPIO as GPIO
+try:
+    import RPi.GPIO as GPIO  # Import Raspberry Pi GPIO module
+except ImportError:
+    from mock_gpio import GPIO  # Import mock GPIO module
 import time
 
 # Set up GPIO pin
@@ -21,17 +24,19 @@ def set_angle(angle):
     GPIO.output(servo_pin, False)
     pwm.ChangeDutyCycle(0)
 
-try:
-    while True:
-        set_angle(45)   # Move the Servo motor arm to 45 degrees
-        time.sleep(1)   # Wait for 1 second
-        set_angle(90)   # Move the Servo motor arm to 90 degrees
-        time.sleep(1)   # Wait for 1 second
-        set_angle(135)  # Move the Servo motor arm to 135 degrees
-        time.sleep(1)   # Wait for 1 second
-        set_angle(90)   # Move the Servo motor arm to 90 degrees
-        time.sleep(1)   # Wait for 1 second
 
-finally:
-    pwm.stop()  # Stop PWM
-    GPIO.cleanup()  # Reset GPIO settings
+def run_motor():
+    try:
+        while True:
+            set_angle(45)  # Move the Servo motor arm to 45 degrees
+            time.sleep(1)  # Wait for 1 second
+            set_angle(90)  # Move the Servo motor arm to 90 degrees
+            time.sleep(1)  # Wait for 1 second
+            set_angle(135)  # Move the Servo motor arm to 135 degrees
+            time.sleep(1)  # Wait for 1 second
+            set_angle(90)  # Move the Servo motor arm to 90 degrees
+            time.sleep(1)  # Wait for 1 second
+
+    finally:
+        pwm.stop()  # Stop PWM
+        GPIO.cleanup()  # Reset GPIO settings

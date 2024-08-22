@@ -36,9 +36,11 @@ dht_sensors = {
     SENSOR_PINS[1]: adafruit_dht.DHT11(board.D17),  # DHT11 sensor
     SENSOR_PINS[2]: adafruit_dht.DHT11(board.D27),  # DHT11 sensor
 }
+PWM = 0
 
 # Updated motor angle dictionary
 dictionary = {1: -90, 2: 0, 3: 90}  # Mapping of sensor numbers to motor angles
+
 
 def initialize_gpio():
     GPIO.cleanup()  # Initialize all GPIO ports
@@ -46,17 +48,18 @@ def initialize_gpio():
     GPIO.setup(SENSOR_PINS, GPIO.OUT)  # Set SENSOR pins as output
     GPIO.setup(PUMP, GPIO.OUT)  # Set PUMP pin as output
     GPIO.setup(MOTOR, GPIO.OUT)  # Set MOTOR pin as output
-    global pwm
-    pwm = GPIO.PWM(MOTOR, 50)  # Set PWM for SG90 motor at 50Hz
-    pwm.start(0)  # Start PWM with a duty cycle of 0
+    GPIO.PWM(MOTOR, 50)  # Set PWM for SG90 motor at 50Hz
+    GPIO.PWM.start(0)  # Start PWM with a duty cycle of 0
+
 
 def set_angle(angle):
     duty = 2 + (angle / 18)  # Convert angle to duty cycle
     GPIO.output(MOTOR, True)
-    pwm.ChangeDutyCycle(duty)
+    GPIO.PWM.ChangeDutyCycle(duty)
     time.sleep(0.5)
     GPIO.output(MOTOR, False)
-    pwm.ChangeDutyCycle(0)  # Stop the motor by setting duty cycle to 0
+    GPIO.PWM.ChangeDutyCycle(0)  # Stop the motor by setting duty cycle to 0
+
 
 def safe_print(*args, **kwargs):
     """Prints safely, ignoring non-UTF-8 characters."""
@@ -64,6 +67,7 @@ def safe_print(*args, **kwargs):
         print(*args, **kwargs)
     except UnicodeEncodeError:
         print("Encoding error occurred while printing.")
+
 
 def send_to_supabase(temp: float, humi: float, sensor_id: int):
     url = f"{API_URL}/rest/v1/{TABLE_NAME[sensor_id]}"
@@ -83,6 +87,7 @@ def send_to_supabase(temp: float, humi: float, sensor_id: int):
         safe_print(f"Data sent successfully for sensor {sensor_id + 1}")
     else:
         safe_print(f"Failed to send data for sensor {sensor_id + 1}: {response.text}")
+
 
 def check_sensor_conditions():
     triggered_sensors = []
@@ -105,6 +110,7 @@ def check_sensor_conditions():
         time.sleep(2.0)
     return triggered_sensors
 
+
 def motor_angle(sensor_list):
     for sensor_number in sensor_list:
         target_angle = dictionary[sensor_number]  # Get the target angle corresponding to the sensor number
@@ -114,6 +120,7 @@ def motor_angle(sensor_list):
         # Move back to 0 degrees after reaching the target angle
         safe_print("Returning motor to 0°")
         set_angle(0)
+
 
 atexit.register(GPIO.cleanup)
 
@@ -135,5 +142,5 @@ try:
         time.sleep(2.0)
 
 finally:  # This block is executed when the try block exits
-    pwm.stop()  # Stop PWM
+    GPIO.PWM.stop()  # Stop PWM
     GPIO.cleanup()  # Clean up GPIO settings
