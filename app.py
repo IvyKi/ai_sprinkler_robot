@@ -69,8 +69,8 @@ def safe_print(*args, **kwargs):
         print("Encoding error occurred while printing.")
 
 
-def send_to_supabase(temp: float, humi: float, sensor_id: int):
-    url = f"{API_URL}/rest/v1/{TABLE_NAME[sensor_id]}"
+def send_to_supabase(sensor_num: int, temp: float, humi: float):
+    url = f"{API_URL}/rest/v1/{TABLE_NAME[sensor_num]}"
     headers = {
         "Content-Type": "application/json",
         "apikey": API_KEY,
@@ -84,9 +84,9 @@ def send_to_supabase(temp: float, humi: float, sensor_id: int):
     }
     response = requests.post(url, headers=headers, data=json.dumps(payload))
     if response.status_code == 201:
-        safe_print(f"Data sent successfully for sensor {sensor_id + 1}")
+        safe_print(f"Data sent successfully for sensor {sensor_num + 1}")
     else:
-        safe_print(f"Failed to send data for sensor {sensor_id + 1}: {response.text}")
+        safe_print(f"Failed to send data for sensor {sensor_num + 1}: {response.text}")
 
 
 def check_sensor_conditions():
@@ -101,7 +101,7 @@ def check_sensor_conditions():
                 safe_print(
                     f"Sensor {i + 1} meets the condition - Temp: {temperature_c:.1f} C, Humidity: {humidity}%"
                 )
-                send_to_supabase(temperature_c, humidity, i)
+                send_to_supabase(i, temperature_c, humidity)
                 triggered_sensors.append(i + 1)  #
 
         except RuntimeError as error:
@@ -131,11 +131,13 @@ try:
     while True:
         result = check_sensor_conditions()
         if result:
+
             motor_angle(result)
             GPIO.output(PUMP, GPIO.HIGH)  # Turn pump on if condition is satisfied
             safe_print(f"Sensor {result} satisfied the condition. Pump is ON.")
             time.sleep(3)  # Keep the pump on for 3 seconds
             GPIO.output(PUMP, GPIO.LOW)  # Turn pump off
+
         else:
             safe_print("No sensor satisfied the condition. Pump remains OFF.")
 
