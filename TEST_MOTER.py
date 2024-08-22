@@ -12,6 +12,7 @@ GPIO.setup(servo_pin, GPIO.OUT)  # Set pin 2 as output
 pwm = GPIO.PWM(servo_pin, 50)  # Set PWM frequency to 50Hz (SG90 servo motor uses 50Hz)
 pwm.start(0)  # Start PWM with initial value 0
 
+
 def set_angle(angle):
     duty = 2 + (angle / 18)  # Calculate duty cycle based on the angle
     GPIO.output(servo_pin, True)
