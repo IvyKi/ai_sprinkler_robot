@@ -45,7 +45,7 @@ dictionary = {1: -90, 2: 0, 3: 90}  # Mapping of sensor numbers to motor angles
 def initialize_gpio():
     GPIO.cleanup()  # Initialize all GPIO ports
     GPIO.setmode(GPIO.BCM)  # Set GPIO pin numbering mode
-    GPIO.setup(SENSOR_PINS, GPIO.OUT)  # Set SENSOR pins as output
+    GPIO.setup(SENSOR_PINS, GPIO.IN)  # Set SENSOR pins as output
     GPIO.setup(PUMP, GPIO.OUT)  # Set PUMP pin as output
     GPIO.setup(MOTOR, GPIO.OUT)  # Set MOTOR pin as output
     GPIO.PWM(MOTOR, 50)  # Set PWM for SG90 motor at 50Hz
@@ -101,8 +101,8 @@ def check_sensor_conditions():
                 safe_print(
                     f"Sensor {i + 1} meets the condition - Temp: {temperature_c:.1f} C, Humidity: {humidity}%"
                 )
-                send_to_supabase(i, temperature_c, humidity)
-                triggered_sensors.append(i + 1)  #
+                send_to_supabase(i + 1, temperature_c, humidity)
+                triggered_sensors.append(i + 1)
 
         except RuntimeError as error:
             # Handle sensor errors
