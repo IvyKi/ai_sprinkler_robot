@@ -141,7 +141,7 @@ try:
         else:
             safe_print("No sensor satisfied the condition. Pump remains OFF.")
 
-        time.sleep(0.5)
+        time.sleep(1)
 
 finally:  # This block is executed when the try block exits
     servo.stop()  # Stop PWM safely
