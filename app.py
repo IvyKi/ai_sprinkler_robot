@@ -65,7 +65,7 @@ def set_servo_angle(degree):
     # Convert degree to duty cycle
     duty = servo_min_duty + (degree * (servo_max_duty - servo_min_duty) / 180.0)
     servo.ChangeDutyCycle(duty)  # Change the duty cycle
-    time.sleep(0.5)  # Give the motor time to move to the position
+    time.sleep(1)  # Give the motor time to move to the position
     servo.ChangeDutyCycle(0)  # Stop the motor
 
 def safe_print(*args, **kwargs):
@@ -121,7 +121,7 @@ def motor_angle(sensor_list):
         target_angle = dictionary[sensor_number]  # Get the target angle corresponding to the sensor number
         safe_print(f"Moving motor to {target_angle}° for sensor {sensor_number}")
         set_servo_angle(target_angle)  # Move motor to the target angle
-        time.sleep(0.5)
+        time.sleep(1)
 
 atexit.register(GPIO.cleanup)
 
