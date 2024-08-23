@@ -112,7 +112,7 @@ def check_sensor_conditions():
         except RuntimeError as error:
             # Handle sensor errors
             safe_print(error.args[0])
-        time.sleep(2.0)
+        time.sleep(1.0)
     return triggered_sensors
 
 def motor_angle(sensor_list):
@@ -121,7 +121,7 @@ def motor_angle(sensor_list):
         target_angle = dictionary[sensor_number]  # Get the target angle corresponding to the sensor number
         safe_print(f"Moving motor to {target_angle}° for sensor {sensor_number}")
         set_servo_angle(target_angle)  # Move motor to the target angle
-        time.sleep(2.0)
+        time.sleep(0.5)
 
 atexit.register(GPIO.cleanup)
 
@@ -141,7 +141,7 @@ try:
         else:
             safe_print("No sensor satisfied the condition. Pump remains OFF.")
 
-        time.sleep(2.0)
+        time.sleep(0.5)
 
 finally:  # This block is executed when the try block exits
     servo.stop()  # Stop PWM safely
