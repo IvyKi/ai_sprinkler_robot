@@ -102,13 +102,14 @@ def check_sensor_conditions():
             temperature_c = dht_device.temperature
             humidity = dht_device.humidity
             send_to_supabase(i + 1, temperature_c, humidity)
-
-            if temperature_c >= 20 and humidity >= 20:
-                safe_print(
+            safe_print(
                     f"Sensor {i + 1} meets the condition - Temp: {temperature_c:.1f} C, Humidity: {humidity}%"
                 )
-                
+
+            if temperature_c >= 25 and humidity >= 20:
                 triggered_sensors.append(i + 1)
+            else:
+                pass
 
         except RuntimeError as error:
             # Handle sensor errors
