@@ -16,7 +16,7 @@ SENSOR_PINS = [4, 17, 27]  # DHT22 on GPIO 4, DHT11 on GPIO 17, 27
 PUMP = 3  # Pins for the pump
 MOTOR = 10  # Pin for the SG90 motor
 
-# Supabase RESTFUL API URL
+# Supabase RESTful API URL
 API_URL = "https://yscyyvxduwdfjldjnwus.supabase.co"
 # Supabase project API key
 API_KEY = (
@@ -40,6 +40,8 @@ dht_sensors = {
 # Updated motor angle dictionary (1번 -> 0도, 2번 -> 90도, 3번 -> 180도)
 dictionary = {1: 0, 2: 90, 3: 180}  # Mapping of sensor numbers to motor angles
 
+servo_min_duty = 3  # Set the minimum duty cycle to 3
+servo_max_duty = 12  # Set the maximum duty cycle to 12
 
 def initialize_gpio():
     GPIO.cleanup()  # Initialize all GPIO ports
@@ -48,27 +50,23 @@ def initialize_gpio():
     GPIO.setup(PUMP, GPIO.OUT)  # Set PUMP pin as output
     GPIO.setup(MOTOR, GPIO.OUT)  # Set MOTOR pin as output
 
+    global servo
+    servo = GPIO.PWM(MOTOR, 50)  # Set MOTOR pin to PWM mode with 50Hz frequency
+    servo.start(0)  # Initialize PWM with a duty cycle of 0
 
-def set_angle(num):
-    """Simple motor control to simulate setting an angle."""
-    if num == 1:
-        degree = 45
-    elif num == 2:
-        degree = 90
-    elif num == 3:
-        degree = 135
-    else:
+def set_servo_angle(degree):
+    """Sets the servo motor to a specific angle."""
+    # Angle must be within the range of 0 to 180 degrees
+    if degree > 180:
+        degree = 180
+    elif degree < 0:
         degree = 0
 
-    # Convert the input angle (degree) to a duty cycle
+    # Convert degree to duty cycle
     duty = servo_min_duty + (degree * (servo_max_duty - servo_min_duty) / 180.0)
-    # Apply the calculated duty cycle to the servo motor
-    servo.ChangeDutyCycle(duty)
-
-    # GPIO.output(MOTOR, GPIO.HIGH)
-    # time.sleep(0.5)  # Wait for half a second (simulate movement)
-    # GPIO.output(MOTOR, GPIO.LOW)
-
+    servo.ChangeDutyCycle(duty)  # Change the duty cycle
+    time.sleep(0.5)  # Give the motor time to move to the position
+    servo.ChangeDutyCycle(0)  # Stop the motor
 
 def safe_print(*args, **kwargs):
     """Prints safely, ignoring non-UTF-8 characters."""
@@ -76,7 +74,6 @@ def safe_print(*args, **kwargs):
         print(*args, **kwargs)
     except UnicodeEncodeError:
         print("Encoding error occurred while printing.")
-
 
 def send_to_supabase(sensor_num: int, temp: float, humi: float):
     url = f"{API_URL}/rest/v1/{TABLE_NAME[sensor_num]}"
@@ -96,7 +93,6 @@ def send_to_supabase(sensor_num: int, temp: float, humi: float):
         safe_print(f"Data sent successfully for sensor {sensor_num}")
     else:
         safe_print(f"Failed to send data for sensor {sensor_num}: {response.text}")
-
 
 def check_sensor_conditions():
     triggered_sensors = []
@@ -119,19 +115,13 @@ def check_sensor_conditions():
         time.sleep(2.0)
     return triggered_sensors
 
-
 def motor_angle(sensor_list):
     # Sensor list is sorted to ensure 1, 2, 3 order
     for sensor_number in sorted(sensor_list):
         target_angle = dictionary[sensor_number]  # Get the target angle corresponding to the sensor number
         safe_print(f"Moving motor to {target_angle}° for sensor {sensor_number}")
-        set_angle(sensor_number)  # Move motor to the target angle
-        sleep(0.1)
-
-        # Move back to 0 degrees after reaching the target angle
-        safe_print("Returning motor to 0°")
-        set_angle(0)
-
+        set_servo_angle(target_angle)  # Move motor to the target angle
+        time.sleep(2.0)
 
 atexit.register(GPIO.cleanup)
 
@@ -154,4 +144,5 @@ try:
         time.sleep(2.0)
 
 finally:  # This block is executed when the try block exits
+    servo.stop()  # Stop PWM safely
     GPIO.cleanup()  # Clean up GPIO settings
