@@ -39,7 +39,7 @@ dht_sensors = {
 PWM = 0
 
 # Updated motor angle dictionary
-dictionary = {1: -90, 2: 0, 3: 90}  # Mapping of sensor numbers to motor angles
+dictionary = {1: 0, 2: 90, 3: 180}  # Mapping of sensor numbers to motor angles
 
 
 def initialize_gpio():
