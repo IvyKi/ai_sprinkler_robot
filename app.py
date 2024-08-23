@@ -48,14 +48,17 @@ def initialize_gpio():
     GPIO.setup(SENSOR_PINS, GPIO.IN)  # Set SENSOR pins as output
     GPIO.setup(PUMP, GPIO.OUT)  # Set PUMP pin as output
     GPIO.setup(MOTOR, GPIO.OUT)  # Set MOTOR pin as output
+    global PWM
     GPIO.PWM(MOTOR, 50)  # Set PWM for SG90 motor at 50Hz
-    GPIO.PWM.start(0)  # Start PWM with a duty cycle of 0
+    PWM.start(0)  # Start PWM with a duty cycle of 0
 
 
 def set_angle(angle):
     duty = 2 + (angle / 18)  # Convert angle to duty cycle
     GPIO.output(MOTOR, True)
     GPIO.PWM.ChangeDutyCycle(duty)
+    print("hello")
+
     time.sleep(0.5)
     GPIO.output(MOTOR, False)
     GPIO.PWM.ChangeDutyCycle(0)  # Stop the motor by setting duty cycle to 0
