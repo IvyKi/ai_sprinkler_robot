@@ -32,9 +32,9 @@ TABLE_NAME = ["action_log", "sprinkler_get", "sprinkler_get2", "sprinkler_get3"]
 
 # Initialize each sensor
 dht_sensors = {
-    SENSOR_PINS[0]: adafruit_dht.DHT22(board.D4),  # DHT22 sensor
-    SENSOR_PINS[1]: adafruit_dht.DHT11(board.D17),  # DHT11 sensor
-    SENSOR_PINS[2]: adafruit_dht.DHT11(board.D27),  # DHT11 sensor
+    SENSOR_PINS[0]: adafruit_dht.DHT22(board.D4, use_pulseio=False),  # DHT22 sensor
+    SENSOR_PINS[1]: adafruit_dht.DHT11(board.D17, use_pulseio=False),  # DHT11 sensor
+    SENSOR_PINS[2]: adafruit_dht.DHT11(board.D27, use_pulseio=False),  # DHT11 sensor
 }
 
 # Updated motor angle dictionary (1번 -> 0도, 2번 -> 90도, 3번 -> 180도)
