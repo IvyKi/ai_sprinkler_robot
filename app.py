@@ -43,6 +43,7 @@ dictionary = {1: 0, 2: 90, 3: 180}  # Mapping of sensor numbers to motor angles
 servo_min_duty = 3  # Set the minimum duty cycle to 3
 servo_max_duty = 12  # Set the maximum duty cycle to 12
 
+
 def initialize_gpio():
     GPIO.cleanup()  # Initialize all GPIO ports
     GPIO.setmode(GPIO.BCM)  # Set GPIO pin numbering mode
@@ -53,6 +54,7 @@ def initialize_gpio():
     global servo
     servo = GPIO.PWM(MOTOR, 50)  # Set MOTOR pin to PWM mode with 50Hz frequency
     servo.start(0)  # Initialize PWM with a duty cycle of 0
+
 
 def set_servo_angle(degree):
     """Sets the servo motor to a specific angle."""
@@ -68,12 +70,14 @@ def set_servo_angle(degree):
     time.sleep(1)  # Give the motor time to move to the position
     servo.ChangeDutyCycle(0)  # Stop the motor
 
+
 def safe_print(*args, **kwargs):
     """Prints safely, ignoring non-UTF-8 characters."""
     try:
         print(*args, **kwargs)
     except UnicodeEncodeError:
         print("Encoding error occurred while printing.")
+
 
 def send_to_supabase(sensor_num: int, temp: float, humi: float):
     url = f"{API_URL}/rest/v1/{TABLE_NAME[sensor_num]}"
@@ -93,6 +97,7 @@ def send_to_supabase(sensor_num: int, temp: float, humi: float):
         safe_print(f"Data sent successfully for sensor {sensor_num}")
     else:
         safe_print(f"Failed to send data for sensor {sensor_num}: {response.text}")
+
 
 def check_sensor_conditions():
     triggered_sensors = []
@@ -114,8 +119,9 @@ def check_sensor_conditions():
         except RuntimeError as error:
             # Handle sensor errors
             safe_print(error.args[0])
-        time.sleep(1.0)
+        time.sleep(5.0)
     return triggered_sensors
+
 
 def motor_angle(sensor_list):
     # Sensor list is sorted to ensure 1, 2, 3 order
@@ -124,6 +130,7 @@ def motor_angle(sensor_list):
         safe_print(f"Moving motor to {target_angle}° for sensor {sensor_number}")
         set_servo_angle(target_angle)  # Move motor to the target angle
         time.sleep(1)
+
 
 atexit.register(GPIO.cleanup)
 
