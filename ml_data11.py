@@ -5,7 +5,7 @@ from sklearn.metrics import accuracy_score, classification_report
 import datetime
 
 
-class FirePredictionModel:
+class PredictProbability:
     def __init__(self, data_path):
         self.data_path = data_path
         self.fire_data = None
@@ -73,16 +73,15 @@ class FirePredictionModel:
         self.probability = self.model.predict_proba([[month, day]])[0][1]
         return self.probability * 100
 
-    def predict_today_fire_probability(self):
+    def predict_today_fire_probability(self, month, day):
         """Predict the probability of fire occurrence for today's date."""
-        today = datetime.date.today()
-        return self.predict_fire_probability(today.month, today.day)
+        return self.predict_fire_probability(month, day)
 
 
 # Usage example
 if __name__ == "__main__":
     # Initialize the FirePredictionModel class
-    model = FirePredictionModel(data_path='data001.xlsx')
+    model = PredictProbability(data_path='data001.xlsx')
 
     # Load the data
     model.load_data()
@@ -93,6 +92,7 @@ if __name__ == "__main__":
     # Train the model
     model.train_model()
 
+    today = datetime.datetime.today()
     # Predict fire probability for today's date
-    today_fire_probability = model.predict_today_fire_probability()
+    today_fire_probability = model.predict_today_fire_probability(int(today.month), int(today.day))
     print(f"Fire Probability: {today_fire_probability:.2f}%")

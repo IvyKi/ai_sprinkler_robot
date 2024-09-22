@@ -31,7 +31,7 @@ import pandas as pd
 import datetime
 
 
-class WeatherDataProcessor:
+class PredictWeather:
     def __init__(self, file_path):
         self.file_path = file_path
         self.data = None
@@ -64,16 +64,15 @@ class WeatherDataProcessor:
         else:
             return None, None  # Return None if the date is not found in the data
 
-    def predict_today_weather(self):
+    def predict_today_weather(self, month, day):
         """Predict the average temperature and humidity for today's date."""
-        today = datetime.date.today()
-        return self.get_avg_temp_humidity(today.month, today.day)
+        return self.get_avg_temp_humidity(month, day)
 
 
 # Usage example
 if __name__ == "__main__":
-    # Initialize the WeatherDataProcessor class with the file path
-    weather_processor = WeatherDataProcessor(file_path='data002.xlsx')
+    # Initialize the Predict_weather class with the file path
+    weather_processor = PredictWeather(file_path='data002.xlsx')
 
     # Load the data
     weather_processor.load_data()
@@ -84,11 +83,14 @@ if __name__ == "__main__":
     # Calculate average temperature and humidity for each month and day
     weather_processor.calculate_average()
 
+    today = datetime.datetime.today()
     # Get predicted average temperature and humidity for today's date
-    predicted_temp, predicted_humidity = weather_processor.predict_today_weather()
+    predicted_temp, predicted_humidity = (weather_processor
+                                          .predict_today_weather(int(today.month), int(today.day)))
 
     if predicted_temp is not None and predicted_humidity is not None:
         print(
-            f"Predicted Average Temperature: {predicted_temp:.2f}°C, Predicted Average Humidity: {predicted_humidity:.2f}%")
+            f"Predicted Average Temperature: {predicted_temp:.2f}°C, "
+            f"Predicted Average Humidity: {predicted_humidity:.2f}%")
     else:
         print("No data available for today's date.")
