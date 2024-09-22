@@ -2,9 +2,6 @@ from ml_data11 import PredictProbability
 from ml_data22 import PredictWeather
 import datetime as dt
 
-FILE_PATH = ['data001.xlsx', 'data002.xlsx']
-TODAY = dt.datetime.now()
-
 
 def predict_probability(file_path, month, day):
     ml_a = PredictProbability(file_path)
@@ -24,11 +21,3 @@ def predict_weather(file_path, month, day):
     pre_t, pre_h = ml_b.predict_today_weather(month, day)
 
     return round(float(pre_t), 2), round(float(pre_h), 2)
-
-
-if __name__ == '__main__':
-    probability = predict_probability(FILE_PATH[0])
-    print(probability)
-
-    temperature, humidity = predict_weather(FILE_PATH[1])
-    print(temperature, humidity)
