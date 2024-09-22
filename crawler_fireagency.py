@@ -92,7 +92,14 @@ class Fireagency:
         Returns:
             list: A list of monthly counts.
         """
-        month_counts = self.col_m.value_counts().reindex(range(1, 13), fill_value=0)
+        self.load_file()
+
+        df1 = pd.DataFrame({
+            'month': self.col_m,
+            'day': self.col_d
+        })
+
+        month_counts = df1['month'].value_counts().reindex(range(1, 13), fill_value=0)
         self.month_data = month_counts.tolist()
 
         return self.month_data
