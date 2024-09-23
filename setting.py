@@ -2,6 +2,7 @@ from supabase import create_client, Client
 import datetime as dt
 import board  # Import board module for pin definitions
 import adafruit_dht  # Import Adafruit DHT sensor library
+from trigger import predict_weather, predict_probability
 
 
 API_URL = "https://yscyyvxduwdfjldjnwus.supabase.co"
@@ -28,3 +29,7 @@ DHT_SENSORS = {
     SENSOR_PINS[2]: adafruit_dht.DHT11(board.D27, use_pulseio=False),  # DHT11 sensor
 }
 ANGLE = {1: 0, 2: 90, 3: 180}  # Mapping of sensor numbers to motor angles
+
+PROBABILITY = predict_probability(FILE_PATH[0], int(TODAY.month), int(TODAY.day))
+PRE_T, PRE_H = predict_weather(FILE_PATH[1], int(TODAY.month), int(TODAY.day))
+

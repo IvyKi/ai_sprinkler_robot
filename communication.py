@@ -1,10 +1,7 @@
 import requests
 import setting as s
 import json
-from trigger import predict_weather
 import time
-
-pre_t, pre_h = predict_weather(s.FILE_PATH[1], int(s.TODAY.month), int(s.TODAY.day))
 
 
 def safe_print(*args, **kwargs):
@@ -78,7 +75,7 @@ def check_sensor_conditions():
                     f"Sensor {i + 1} meets the condition - Temp: {temperature:.1f} C, Humidity: {humidity}%"
                 )
             trigger = False
-            if temperature >= pre_t and humidity >= pre_h:
+            if temperature >= s.PRE_T and humidity >= s.PRE_H:
                 triggered_sensors.append(i + 1)
                 trigger = True
             send_to_supabase(i + 1, temperature, humidity, trigger)
