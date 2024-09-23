@@ -1,4 +1,4 @@
-from trigger import PredictionModel
+from trigger import predict_weather, predict_probability
 import setting
 
 
@@ -25,7 +25,7 @@ def extract_day(day):
 
 
 def compare_probability(a):
-    probability = PredictionModel.predict_fire_probability(setting.FILE_PATH[0], a[0], a[1])
+    probability = predict_probability(setting.FILE_PATH[0], a[0], a[1])
 
     if probability >= 75.00:
         return True
@@ -37,7 +37,7 @@ def compare_weather(a, temp, hum):
     trig_temp, trig_hum = False, False
     result = []
 
-    temperature, humidity = PredictionModel.predict_weather(setting.FILE_PATH[1], a[0], a[1])
+    temperature, humidity = predict_weather(setting.FILE_PATH[1], a[0], a[1])
     if temp >= temperature:
         trig_temp = True
 

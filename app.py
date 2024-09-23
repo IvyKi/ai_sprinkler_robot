@@ -3,7 +3,7 @@ try:
 except ImportError:
     from mock_gpio import GPIO  # Import mock GPIO module
 
-import time  # Import time module
+import time
 import setting as s
 import atexit
 import communication as comm
