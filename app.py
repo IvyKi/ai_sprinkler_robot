@@ -74,6 +74,35 @@ def send_to_supabase(sensor_num: int, temp: float, humi: float, trig: bool):
         safe_print(f"Failed to send data for sensor {sensor_num}: {response.text}")
 
 
+def read_from_supabase():
+    action_sensors = []
+
+    url = f"{s.API_URL}/rest/v1/{s.TABLE[0]}"
+    headers = {
+        "apikey": s.API_KEY,  # Assuming your API key is stored in s.API_KEY
+        "Authorization": f"Bearer {s.API_KEY}",
+    }
+    response = requests.get(url, headers=headers)
+
+    if response.status_code != 200:
+        print(f"Error: Unable to fetch data. Status code: {response.status_code}")
+        return []
+
+    data = response.json()
+    sensor_initials = {
+        'sensor_A': 1,
+        'sensor_B': 2,
+        'sensor_C': 3
+    }
+
+    for row in data:
+        for sensor, initial in sensor_initials.items():
+            if row.get(sensor):
+                action_sensors.append(initial)
+
+    return action_sensors
+
+
 def check_sensor_conditions():
     triggered_sensors = []
 
@@ -115,10 +144,18 @@ initialize_gpio()
 try:
     while True:
         result = check_sensor_conditions()
+        action = read_from_supabase()
         if result:
             motor_angle(result)
             GPIO.output(s.PUMP, GPIO.HIGH)  # Turn pump on if condition is satisfied
             safe_print(f"Sensor {result} satisfied the condition. Pump is ON.")
+            time.sleep(3)  # Keep the pump on for 3 seconds
+            GPIO.output(s.PUMP, GPIO.LOW)  # Turn pump off
+
+        elif action:
+            motor_angle(action)
+            GPIO.output(s.PUMP, GPIO.HIGH)  # Turn pump on if condition is satisfied
+            safe_print(f"Sensor {action} satisfied the condition. Pump is ON.")
             time.sleep(3)  # Keep the pump on for 3 seconds
             GPIO.output(s.PUMP, GPIO.LOW)  # Turn pump off
 
