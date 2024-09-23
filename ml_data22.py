@@ -12,22 +12,25 @@ class PredictWeather:
         """Load the data from the Excel file."""
         self.data = pd.read_excel(self.file_path)
 
-    def fill_missing_values(self):
-        """Fill missing values in temperature and humidity columns with their respective mean values."""
-        self.data['Temperature'] = self.data['Temperature'].fillna(self.data['Temperature'].mean())
-        self.data['Humidity'] = self.data['Humidity'].fillna(self.data['Humidity'].mean())
-
     def calculate_average(self):
         """Group the data by 'Month' and 'Day' and calculate the mean temperature and humidity."""
         self.average_data = self.data.groupby(['Month', 'Day'], as_index=False).agg(
             {'Temperature': 'mean', 'Humidity': 'mean'})
+
+    def fill_missing_values(self):
+        """Fill missing values in temperature and
+        humidity columns with their respective mean values."""
+        self.data['Temperature'] = (self.data['Temperature']
+                                    .fillna(self.data['Temperature'].mean()))
+        self.data['Humidity'] = (self.data['Humidity'].fillna(self.data['Humidity'].mean()))
 
     def get_avg_temp_humidity(self, month, day):
         """Return the average temperature and humidity for a given month and day."""
         if self.average_data is None:
             raise ValueError("Average data not calculated. Please run calculate_average() first.")
 
-        result = self.average_data[(self.average_data['Month'] == month) & (self.average_data['Day'] == day)]
+        result = self.average_data[(self.average_data['Month'] == month)
+                                   & (self.average_data['Day'] == day)]
         if not result.empty:
             avg_temp = result['Temperature'].values[0]
             avg_humidity = result['Humidity'].values[0]

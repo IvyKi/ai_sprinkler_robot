@@ -78,7 +78,8 @@ class PredictProbability:
                 try:
                     pd.Timestamp(f'2020-{month}-{day}')  # Ensure it's a valid date
                     probability = self.predict_fire_probability(month, day)
-                    all_probabilities.append({'Month': month, 'Day': day, 'Fire_Probability': probability})
+                    all_probabilities.append({'Month': month, 'Day': day,
+                                              'Fire_Probability': probability})
                 except ValueError:
                     continue
         return pd.DataFrame(all_probabilities)
