@@ -4,12 +4,10 @@ except ImportError:
     from mock_gpio import GPIO  # Import mock GPIO module
 
 import time  # Import time module
-import requests  # Import requests module for HTTP requests
-import json  # Import json module for data formatting
-import datetime as dt
 import setting as s
 import atexit
 from trigger import predict_weather, predict_probability
+import communication as comm
 
 
 servo_min_duty = 3  # Set the minimum duty cycle to 3
@@ -44,94 +42,11 @@ def set_servo_angle(degree):
     servo.ChangeDutyCycle(0)  # Stop the motor
 
 
-def safe_print(*args, **kwargs):
-    """Prints safely, ignoring non-UTF-8 characters."""
-    try:
-        print(*args, **kwargs)
-    except UnicodeEncodeError:
-        print("Encoding error occurred while printing.")
-
-
-def send_to_supabase(sensor_num: int, temp: float, humi: float, trig: bool):
-    url = f"{s.API_URL}/rest/v1/{s.TABLE[sensor_num]}"
-    headers = {
-        "Content-Type": "application/json",
-        "apikey": s.API_KEY,
-        "Authorization": f"Bearer {s.API_KEY}",
-    }
-    payload = {
-        "day": str(dt.datetime.today().date()),  # Convert date to string
-        "time": str(dt.datetime.today().time()),  # Convert time to string
-        "temperature": temp,  # Temperature data
-        "humidity": humi,  # Humidity data
-        "trigger": trig
-
-    }
-    response = requests.post(url, headers=headers, data=json.dumps(payload))
-    if response.status_code == 201:
-        safe_print(f"Data sent successfully for sensor {sensor_num}")
-    else:
-        safe_print(f"Failed to send data for sensor {sensor_num}: {response.text}")
-
-
-def read_from_supabase():
-    action_sensors = []
-
-    url = f"{s.API_URL}/rest/v1/{s.TABLE[0]}"
-    headers = {
-        "apikey": s.API_KEY,  # Assuming your API key is stored in s.API_KEY
-        "Authorization": f"Bearer {s.API_KEY}",
-    }
-    response = requests.get(url, headers=headers)
-
-    if response.status_code != 200:
-        print(f"Error: Unable to fetch data. Status code: {response.status_code}")
-        return []
-
-    data = response.json()
-    sensor_initials = {
-        'sensor_A': 1,
-        'sensor_B': 2,
-        'sensor_C': 3
-    }
-
-    for row in data:
-        for sensor, initial in sensor_initials.items():
-            if row.get(sensor):
-                action_sensors.append(initial)
-
-    return action_sensors
-
-
-def check_sensor_conditions():
-    triggered_sensors = []
-
-    for i, pin in enumerate(s.SENSOR_PINS):
-        try:
-            dht_device = s.DHT_SENSORS[pin]
-            temperature = dht_device.temperature
-            humidity = dht_device.humidity
-            safe_print(
-                    f"Sensor {i + 1} meets the condition - Temp: {temperature:.1f} C, Humidity: {humidity}%"
-                )
-            trigger = False
-            if temperature >= pre_t and humidity >= pre_h:
-                triggered_sensors.append(i + 1)
-                trigger = True
-            send_to_supabase(i + 1, temperature, humidity, trigger)
-
-        except RuntimeError as error:
-            # Handle sensor errors
-            safe_print(error.args[0])
-        time.sleep(5.0)
-    return triggered_sensors
-
-
 def motor_angle(sensor_list):
     # Sensor list is sorted to ensure 1, 2, 3 order
     for sensor_number in sorted(sensor_list):
         target_angle = s.ANGLE[sensor_number]  # Get the target angle corresponding to the sensor number
-        safe_print(f"Moving motor to {target_angle}° for sensor {sensor_number}")
+        comm.safe_print(f"Moving motor to {target_angle}° for sensor {sensor_number}")
         set_servo_angle(target_angle)  # Move motor to the target angle
         time.sleep(1)
 
@@ -143,24 +58,24 @@ initialize_gpio()
 
 try:
     while True:
-        result = check_sensor_conditions()
-        action = read_from_supabase()
+        result = comm.check_sensor_conditions()
+        action = comm.read_from_supabase()
         if result:
             motor_angle(result)
             GPIO.output(s.PUMP, GPIO.HIGH)  # Turn pump on if condition is satisfied
-            safe_print(f"Sensor {result} satisfied the condition. Pump is ON.")
+            comm.safe_print(f"Sensor {result} satisfied the condition. Pump is ON.")
             time.sleep(3)  # Keep the pump on for 3 seconds
             GPIO.output(s.PUMP, GPIO.LOW)  # Turn pump off
 
         elif action:
             motor_angle(action)
             GPIO.output(s.PUMP, GPIO.HIGH)  # Turn pump on if condition is satisfied
-            safe_print(f"Sensor {action} satisfied the condition. Pump is ON.")
+            comm.safe_print(f"Sensor {action} satisfied the condition. Pump is ON.")
             time.sleep(3)  # Keep the pump on for 3 seconds
             GPIO.output(s.PUMP, GPIO.LOW)  # Turn pump off
 
         else:
-            safe_print("No sensor satisfied the condition. Pump remains OFF.")
+            comm.safe_print("No sensor satisfied the condition. Pump remains OFF.")
 
         time.sleep(1)
 

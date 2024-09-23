@@ -1,61 +1,91 @@
-"""ai_sprinkler_robot/communication.py
-This module defines a class for
-communication between Raspberry Pi and database or database and application.
-"""
-
-
 import requests
+import setting as s
 import json
-import datetime as dt
+from trigger import predict_weather
+import time
 
-API_URL = "https://yscyyvxduwdfjldjnwus.supabase.co"  # Supabase RESTful API URL
-API_KEY = (
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
-    ".eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl"
-    "zY3l5dnhkdXdkZmpsZGpud3VzIiwicm9sZSI"
-    "6ImFub24iLCJpYXQiOjE3MjIwNjYxMTQsImV"
-    "4cCI6MjAzNzY0MjExNH0.22vV2RlrW9TU92Y"
-    "79SzuOQKX8v8IISBcaHePht-43Q4"  # Supabase project API key
-)
-TABLE_NAME = ["action_log", "sprinkler_get", "sprinkler_get2", "sprinkler_get3"]
+pre_t, pre_h = predict_weather(s.FILE_PATH[1], int(s.TODAY.month), int(s.TODAY.day))
 
 
-def send_to_supabase(sensor_num, temp, humi):
-    url = f"{API_URL}/rest/v1/{TABLE_NAME[sensor_num]}"
+def safe_print(*args, **kwargs):
+    """Prints safely, ignoring non-UTF-8 characters."""
+    try:
+        print(*args, **kwargs)
+    except UnicodeEncodeError:
+        print("Encoding error occurred while printing.")
+
+
+def send_to_supabase(sensor_num: int, temp: float, humi: float, trig: bool):
+    url = f"{s.API_URL}/rest/v1/{s.TABLE[sensor_num]}"
     headers = {
         "Content-Type": "application/json",
-        "apikey": API_KEY,
-        "Authorization": f"Bearer {API_KEY}",
+        "apikey": s.API_KEY,
+        "Authorization": f"Bearer {s.API_KEY}",
     }
     payload = {
-        "day": str(dt.datetime.today().date()),
-        "time": str(dt.datetime.today().time()),
-        "temperature": temp,
-        "humidity": humi,
+        "day": str(s.TODAY.date()),  # Convert date to string
+        "time": str(s.TODAY.time()),  # Convert time to string
+        "temperature": temp,  # Temperature data
+        "humidity": humi,  # Humidity data
+        "trigger": trig
+
     }
     response = requests.post(url, headers=headers, data=json.dumps(payload))
     if response.status_code == 201:
-        print(f"Data sent successfully to {TABLE_NAME[sensor_num]}")
+        safe_print(f"Data sent successfully for sensor {sensor_num}")
     else:
-        print(f"Failed to send data to {TABLE_NAME[sensor_num]}: {response.text}")
+        safe_print(f"Failed to send data for sensor {sensor_num}: {response.text}")
 
 
-def log_action(temp, humi, sensor_num):
-    url = f"{API_URL}/rest/v1/action_log"
+def read_from_supabase():
+    action_sensors = []
+
+    url = f"{s.API_URL}/rest/v1/{s.TABLE[0]}"
     headers = {
-        "Content-Type": "application/json",
-        "apikey": API_KEY,
-        "Authorization": f"Bearer {API_KEY}",
+        "apikey": s.API_KEY,  # Assuming your API key is stored in s.API_KEY
+        "Authorization": f"Bearer {s.API_KEY}",
     }
-    payload = {
-        "day": str(dt.datetime.today().date()),
-        "time": str(dt.datetime.today().time()),
-        "temperature": temp,
-        "humidity": humi,
-        "sensor_num": sensor_num,
+    response = requests.get(url, headers=headers)
+
+    if response.status_code != 200:
+        print(f"Error: Unable to fetch data. Status code: {response.status_code}")
+        return []
+
+    data = response.json()
+    sensor_initials = {
+        'sensor_A': 1,
+        'sensor_B': 2,
+        'sensor_C': 3
     }
-    response = requests.post(url, headers=headers, data=json.dumps(payload))
-    if response.status_code == 201:
-        print(f"Action logged for sensor {sensor_num}")
-    else:
-        print(f"Failed to log action for sensor {sensor_num}: {response.text}")
+
+    for row in data:
+        for sensor, initial in sensor_initials.items():
+            if row.get(sensor):
+                action_sensors.append(initial)
+
+    return action_sensors
+
+
+def check_sensor_conditions():
+    triggered_sensors = []
+
+    for i, pin in enumerate(s.SENSOR_PINS):
+        try:
+            dht_device = s.DHT_SENSORS[pin]
+            temperature = dht_device.temperature
+            humidity = dht_device.humidity
+            safe_print(
+                    f"Sensor {i + 1} meets the condition - Temp: {temperature:.1f} C, Humidity: {humidity}%"
+                )
+            trigger = False
+            if temperature >= pre_t and humidity >= pre_h:
+                triggered_sensors.append(i + 1)
+                trigger = True
+            send_to_supabase(i + 1, temperature, humidity, trigger)
+
+        except RuntimeError as error:
+            # Handle sensor errors
+            safe_print(error.args[0])
+        time.sleep(5.0)
+
+    return triggered_sensors
