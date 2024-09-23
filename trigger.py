@@ -1,6 +1,5 @@
 from ml_data11 import PredictProbability
 from ml_data22 import PredictWeather
-import datetime as dt
 
 
 def predict_probability(file_path, month, day):

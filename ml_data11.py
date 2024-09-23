@@ -14,7 +14,7 @@ class PredictProbability:
         self.x_train = None
         self.x_test = None
         self.y = None
-        self.y_pred = None
+        self.y_pre = None
         self.y_train = None
         self.y_test = None
         self.probability = 0
@@ -59,9 +59,9 @@ class PredictProbability:
         self.model.fit(self.x_train, self.y_train)
 
         # Evaluate the model
-        self.y_pred = self.model.predict(self.x_test)
-        accuracy = accuracy_score(self.y_test, self.y_pred)
-        report = classification_report(self.y_test, self.y_pred)
+        self.y_pre = self.model.predict(self.x_test)
+        accuracy = accuracy_score(self.y_test, self.y_pre)
+        report = classification_report(self.y_test, self.y_pre)
 
         return accuracy, report
 

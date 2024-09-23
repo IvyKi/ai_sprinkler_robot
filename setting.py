@@ -12,7 +12,7 @@ API_KEY = (
     "6ImFub24iLCJpYXQiOjE3MjIwNjYxMTQsImV"
     "4cCI6MjAzNzY0MjExNH0.22vV2RlrW9TU92Y"
     "79SzuOQKX8v8IISBcaHePht-43Q4")
-TABLE = ["action_log", "sprinkler_get", "sprinkler_get2", "sprinkler_get3", "sprinkler_get4"]
+TABLE = ["action_log", "sprinkler_get1", "sprinkler_get2", "sprinkler_get3", "sprinkler_get4"]
 TODAY = dt.datetime.today()
 SUPABASE: Client = create_client(API_URL, API_KEY)
 FILE_PATH = ['data001.xlsx', 'data002.xlsx']

@@ -52,7 +52,7 @@ def safe_print(*args, **kwargs):
         print("Encoding error occurred while printing.")
 
 
-def send_to_supabase(sensor_num: int, temp: float, humi: float):
+def send_to_supabase(sensor_num: int, temp: float, humi: float, trig: bool):
     url = f"{s.API_URL}/rest/v1/{s.TABLE[sensor_num]}"
     headers = {
         "Content-Type": "application/json",
@@ -64,6 +64,8 @@ def send_to_supabase(sensor_num: int, temp: float, humi: float):
         "time": str(dt.datetime.today().time()),  # Convert time to string
         "temperature": temp,  # Temperature data
         "humidity": humi,  # Humidity data
+        "trigger": trig
+
     }
     response = requests.post(url, headers=headers, data=json.dumps(payload))
     if response.status_code == 201:
@@ -78,15 +80,16 @@ def check_sensor_conditions():
     for i, pin in enumerate(s.SENSOR_PINS):
         try:
             dht_device = s.DHT_SENSORS[pin]
-            temperature_c = dht_device.temperature
+            temperature = dht_device.temperature
             humidity = dht_device.humidity
-            send_to_supabase(i + 1, temperature_c, humidity)
             safe_print(
-                    f"Sensor {i + 1} meets the condition - Temp: {temperature_c:.1f} C, Humidity: {humidity}%"
+                    f"Sensor {i + 1} meets the condition - Temp: {temperature:.1f} C, Humidity: {humidity}%"
                 )
-
-            if temperature_c >= pre_t and humidity >= pre_h:
+            trigger = False
+            if temperature >= pre_t and humidity >= pre_h:
                 triggered_sensors.append(i + 1)
+                trigger = True
+            send_to_supabase(i + 1, temperature, humidity, trigger)
 
         except RuntimeError as error:
             # Handle sensor errors
