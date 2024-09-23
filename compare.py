@@ -27,7 +27,7 @@ def extract_day(day):
 def compare_probability(a):
     probability = predict_probability(setting.FILE_PATH[0], a[0], a[1])
 
-    if probability >= 75.00:
+    if probability >= 79.99:
         return True
     else:
         return False

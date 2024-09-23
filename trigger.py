@@ -7,7 +7,7 @@ def predict_probability(file_path, month, day):
     ml_a.load_data()
     ml_a.generate_all_dates()
     ml_a.train_model()
-    prob = ml_a.predict_today_fire_probability(month, day)
+    prob = ml_a.predict_fire_probability(month, day)
 
     return round(float(prob), 2)
 
