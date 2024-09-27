@@ -13,7 +13,7 @@ import communication as comm
 
 # Pins for each sensor
 SENSOR_PINS = [4, 17, 27]  # DHT22 on GPIO 4, DHT11 on GPIO 17, 27
-PUMP = 3  # Pins for the pump
+PUMP = 3  # Pin for the pump
 MOTOR = 10  # Pin for the SG90 motor
 
 # Supabase RESTful API URL
@@ -39,28 +39,31 @@ dht_sensors = {
     SENSOR_PINS[2]: adafruit_dht.DHT11(board.D27, use_pulseio=False),  # DHT11 sensor
 }
 
-# Updated motor angle dictionary (1번 -> 0도, 2번 -> 90도, 3번 -> 180도)
+# Updated motor angle dictionary (Sensor 1 -> 0 degrees, Sensor 2 -> 90 degrees, Sensor 3 -> 180 degrees)
 dictionary = {1: 0, 2: 90, 3: 180}  # Mapping of sensor numbers to motor angles
 
 servo_min_duty = 3  # Set the minimum duty cycle to 3
 servo_max_duty = 12  # Set the maximum duty cycle to 12
-servo = GPIO.PWM(MOTOR, 50)
 probability = predict_probability(FILE_PATH[0], TODAY.month, TODAY.day)
 pre_t, pre_h = predict_weather(FILE_PATH[1], TODAY.month, TODAY.day)
 
+# Initialize GPIO pins
+GPIO.cleanup()  # Clean up all GPIO ports
+GPIO.setmode(GPIO.BCM)  # Set GPIO pin numbering mode to BCM
 
-def initialize_gpio():
-    GPIO.cleanup()  # Initialize all GPIO ports
-    GPIO.setmode(GPIO.BCM)  # Set GPIO pin numbering mode
-    GPIO.setup(SENSOR_PINS, GPIO.IN)  # Set SENSOR pins as input
-    GPIO.setup(PUMP, GPIO.OUT)  # Set PUMP pin as output
-    GPIO.setup(MOTOR, GPIO.OUT)  # Set MOTOR pin as output
-    servo.start(0)  # Initialize PWM with a duty cycle of 0
+# Initialize each pin in SENSOR_PINS
+for pin in SENSOR_PINS:
+    GPIO.setup(pin, GPIO.IN)  # Set each SENSOR pin as input
+
+GPIO.setup(PUMP, GPIO.OUT)  # Set PUMP pin as output
+GPIO.setup(MOTOR, GPIO.OUT)  # Set MOTOR pin as output
+servo = GPIO.PWM(MOTOR, 50)  # Set MOTOR pin to PWM mode with 50Hz frequency
+servo.start(0)  # Initialize PWM with a duty cycle of 0
 
 
 def set_servo_angle(degree):
     """Sets the servo motor to a specific angle."""
-    # Angle must be within the range of 0 to 180 degrees
+    # Ensure the angle is within the range of 0 to 180 degrees
     if degree > 180:
         degree = 180
     elif degree < 0:
@@ -108,7 +111,7 @@ def check_sensor_conditions():
 
 
 def motor_angle(sensor_list):
-    # Sensor list is sorted to ensure 1, 2, 3 order
+    # Sort the sensor list to ensure it processes in the order 1, 2, 3
     for sensor_number in sorted(sensor_list):
         target_angle = dictionary[sensor_number]  # Get the target angle corresponding to the sensor number
         safe_print(f"Moving motor to {target_angle}° for sensor {sensor_number}")
@@ -116,24 +119,21 @@ def motor_angle(sensor_list):
         time.sleep(1)
 
 
-atexit.register(GPIO.cleanup)
-
-# Initialize GPIO
-initialize_gpio()
+atexit.register(GPIO.cleanup)  # Ensure GPIO is cleaned up when the program exits
 
 try:
     while True:
         weather_trigger, day_trigger = check_sensor_conditions()
         if weather_trigger:
             motor_angle(weather_trigger)
-            GPIO.output(PUMP, GPIO.HIGH)  # Turn pump on if condition is satisfied
+            GPIO.output(PUMP, GPIO.HIGH)  # Turn pump on if weather conditions are satisfied
             safe_print(f"Weather: Sensor {weather_trigger} satisfied. Pump is ON.")
             time.sleep(3)  # Keep the pump on for 3 seconds
             GPIO.output(PUMP, GPIO.LOW)  # Turn pump off
 
         if day_trigger:
             motor_angle(day_trigger)
-            GPIO.output(PUMP, GPIO.HIGH)  # Turn pump on if condition is satisfied
+            GPIO.output(PUMP, GPIO.HIGH)  # Turn pump on if day conditions are satisfied
             safe_print(f"Day: Sensor {day_trigger} satisfied. Pump is ON.")
             time.sleep(3)  # Keep the pump on for 3 seconds
             GPIO.output(PUMP, GPIO.LOW)  # Turn pump off
