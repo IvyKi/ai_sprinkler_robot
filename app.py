@@ -178,15 +178,19 @@ def check_sensor_conditions():
             dht_device = dht_sensors[pin]
             temperature_c = dht_device.temperature
             humidity = dht_device.humidity
-            send_to_supabase(i + 1, temperature_c, humidity)
+            trigger = False
+
             safe_print(
                     f"Sensor {i + 1} meets the condition - Temp: {temperature_c:.1f} C, Humidity: {humidity}%"
-                )
-
+            )
             if temperature_c >= pre_t and humidity >= pre_h:
                 weather_triggered_sensors.append(i + 1)
+                trigger = True
             elif probability >= 89:
                 day_triggered_sensors.append(i + 1)
+                trigger = True
+
+            send_to_supabase(i + 1, temperature_c, humidity, trigger)
 
         except RuntimeError as error:
             # Handle sensor errors
@@ -196,16 +200,7 @@ def check_sensor_conditions():
     return weather_triggered_sensors, day_triggered_sensors
 
 
-def motor_angle(sensor_list):
-    # Sort the sensor list to ensure it processes in the order 1, 2, 3
-    for sensor_number in sorted(sensor_list):
-        target_angle = dictionary[sensor_number]  # Get the target angle corresponding to the sensor number
-        safe_print(f"Moving motor to {target_angle}° for sensor {sensor_number}")
-        set_servo_angle(target_angle)  # Move motor to the target angle
-        time.sleep(1)
-
-
-def send_to_supabase(sensor_num, temp, humi):
+def send_to_supabase(sensor_num, temp, humi, trig):
     url = f"{API_URL}/rest/v1/{TABLE_NAME[sensor_num]}"
     headers = {
         "Content-Type": "application/json",
@@ -217,12 +212,24 @@ def send_to_supabase(sensor_num, temp, humi):
         "time": str(dt.datetime.today().time()),
         "temperature": temp,
         "humidity": humi,
+        "trigger": trig,
     }
     response = requests.post(url, headers=headers, data=json.dumps(payload))
     if response.status_code == 201:
         print(f"Data sent successfully to {TABLE_NAME[sensor_num]}")
     else:
         print(f"Failed to send data to {TABLE_NAME[sensor_num]}: {response.text}")
+
+
+def motor_angle(sensor_list):
+    # Sort the sensor list to ensure it processes in the order 1, 2, 3
+    for sensor_number in sorted(sensor_list):
+        target_angle = dictionary[sensor_number]  # Get the target angle corresponding to the sensor number
+        safe_print(f"Moving motor to {target_angle}° for sensor {sensor_number}")
+        set_servo_angle(target_angle)  # Move motor to the target angle
+        time.sleep(1)
+
+
 
 
 def log_action(temp, humi, sensor_num):
