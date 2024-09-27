@@ -59,3 +59,32 @@ def log_action(temp, humi, sensor_num):
         print(f"Action logged for sensor {sensor_num}")
     else:
         print(f"Failed to log action for sensor {sensor_num}: {response.text}")
+
+
+def read_from_supabase():
+    action_sensors = []
+
+    url = f"{API_URL}/rest/v1/{TABLE_NAME[0]}"
+    headers = {
+        "apikey": API_KEY,  # Assuming your API key is stored in s.API_KEY
+        "Authorization": f"Bearer {API_KEY}",
+    }
+    response = requests.get(url, headers=headers)
+
+    if response.status_code != 200:
+        print(f"Error: Unable to fetch data. Status code: {response.status_code}")
+        return []
+
+    data = response.json()
+    sensor_initials = {
+        'sensor_A': 1,
+        'sensor_B': 2,
+        'sensor_C': 3
+    }
+
+    for row in data:
+        for sensor, initial in sensor_initials.items():
+            if row.get(sensor):
+                action_sensors.append(initial)
+
+    return action_sensors
