@@ -14,8 +14,53 @@ import pandas as pd
 
 
 class Fireagency:
-    def __init__(self):
+    """
+    A class to manage data from an Excel file
+    containing 'Month', 'Day', 'Temperature' and 'Humidity' columns.
 
+    Attributes:
+        df (DataFrame): Pandas DataFrame to store the loaded data.
+        col_m (Series): Pandas Series to store the 'Month' column data.
+        col_d (Series): Pandas Series to store the 'Day' column data.
+        col_t (Series): Pandas Series to store the 'Temperature' column data.
+        col_h (Series): Pandas Series to store the 'Humidity' column data.
+        month_data (list): List to store monthly counts of data.
+        day_data (list): List to store daily counts per month in a pivot table format.
+        temp_data (list): List to store 365 daily average temperature data.
+        hum_data (list): List to store 365 daily average humidity data.
+
+
+    Methods:
+        load_file():
+            Loads data from an Excel file ('data001.xlsx') into the DataFrame (self.df).
+            Sets self.col_m and self.col_d based on 'Month' and 'Day' columns.
+
+        save_month() -> list:
+            Computes and saves the counts of each month's occurrences.
+            Returns a list of monthly counts (self.month_data).
+
+        save_month_day() -> list:
+            Computes and saves the counts of each day per month in a pivot table format.
+            Returns a list of lists (self.day_data) representing the pivot table.
+
+        save_temp() -> list:
+            Computes and saves the daily average temperatures.
+            Returns a list of daily average temperatures (self.temp_data).
+
+        save_hum() -> list:
+            Computes and saves the daily average humidity.
+            Returns a list of daily average humidity (self.hum_data).
+
+        return_data() -> lists:
+            Loads the file, computes monthly and monthly-daily data,
+            and returns 4 lists of self.month_data(list), self.day_data(list),
+            self.temp_data(list), and self.hum_data(list).
+    """
+
+    def __init__(self):
+        """
+        Initializes an instance of Fireagency with empty attributes.
+        """
         self.monthly_avg_hum = None
         self.monthly_avg_temp = None
         self.df = []            # Placeholder for the DataFrame
@@ -29,7 +74,10 @@ class Fireagency:
         self.hum_data = []      # Placeholder for 365 daily average humidity
 
     def load_file(self):
-
+        """
+        Loads data from 'data001.xlsx' into self.df.
+        Extracts 'Month', 'Day', 'Temperature', and 'Humidity' columns into respective attributes.
+        """
         filename = 'data002.xlsx'
         self.df = pd.read_excel(filename)
         self.col_d = self.df['Day']
@@ -38,7 +86,12 @@ class Fireagency:
         self.col_h = self.df['Humidity']
 
     def save_month(self) -> list:
+        """
+        Computes the count of each month's occurrences and saves it in self.month_data.
 
+        Returns:
+            list: A list of monthly counts.
+        """
         self.load_file()
 
         df1 = pd.DataFrame({
@@ -52,7 +105,18 @@ class Fireagency:
         return self.month_data
 
     def save_month_day(self) -> list:
+        """
+        Computes the count of each day per month in a pivot table format and saves it in self.day_data.
 
+        The pivot table is structured such that rows represent each
+        unique day and columns represent each unique month.
+        The values within the table indicate the count of occurrences.
+
+        Returns:
+            list: A list of lists representing daily counts per month.
+                  Each inner list corresponds to a day and contains counts for each month,
+                  filling with 0 where no data exists.
+        """
         df1 = pd.DataFrame({
             'month': self.col_m,
             'day': self.col_d
@@ -67,7 +131,12 @@ class Fireagency:
         return self.day_data
 
     def save_temp(self) -> list:
+        """
+        Computes the daily average temperatures and saves it in self.temp_data.
 
+        Returns:
+            list: A list of daily average temperatures.
+        """
         df1 = pd.DataFrame({
             'Month': self.col_m,
             'Day': self.col_d,
@@ -83,7 +152,12 @@ class Fireagency:
         return self.temp_data
 
     def save_hum(self) -> list:
+        """
+        Computes the daily average humidity and saves it in self.hum_data.
 
+        Returns:
+            list: A list of daily average humidity.
+        """
         df1 = pd.DataFrame({
             'Month': self.col_m,
             'Day': self.col_d,
@@ -99,7 +173,13 @@ class Fireagency:
         return self.hum_data
 
     def save_avg_temp(self):
+        """
+        Computes the monthly average temperature and humidity.
 
+        Returns:
+            tuple: A tuple containing two lists,
+            one for monthly average temperature and one for monthly average humidity.
+        """
         self.load_file()
 
         df1 = pd.DataFrame({
@@ -119,7 +199,13 @@ class Fireagency:
         return self.monthly_avg_temp
 
     def save_avg_hum(self):
+        """
+        Computes the monthly average temperature and humidity.
 
+        Returns:
+            tuple: A tuple containing two lists,
+            one for monthly average temperature and one for monthly average humidity.
+        """
         self.load_file()
 
         df1 = pd.DataFrame({
@@ -139,7 +225,16 @@ class Fireagency:
         return self.monthly_avg_hum
 
     def return_data(self):
+        """
+        Loads the data, computes monthly and daily data,
+        and returns lists of monthly and daily data.
 
+        Returns:
+            list: A list of monthly counts.
+            list: A list of lists representing daily counts per month.
+            list: A list of daily average temperatures.
+            list: A list of daily average humidity.
+        """
         self.load_file()
         self.save_month()
         self.save_month_day()
