@@ -10,6 +10,7 @@ import requests  # Import requests module for HTTP requests
 import json  # Import json module for data formatting
 import datetime as dt
 import atexit
+from trigger import predict_weather, predict_probability
 
 # Pins for each sensor
 SENSOR_PINS = [4, 17, 27]  # DHT22 on GPIO 4, DHT11 on GPIO 17, 27
@@ -28,7 +29,9 @@ API_KEY = (
     "79SzuOQKX8v8IISBcaHePht-43Q4"
 )
 # Supabase table names
-TABLE_NAME = ["action_log", "sprinkler_get", "sprinkler_get2", "sprinkler_get3"]
+TABLE_NAME = ["action_log", "sprinkler_get1", "sprinkler_get2", "sprinkler_get3"]
+TODAY = dt.datetime.today()
+FILE_PATH = ['data001.xlsx', 'data002.xlsx']
 
 # Initialize each sensor
 dht_sensors = {
@@ -42,6 +45,8 @@ dictionary = {1: 0, 2: 90, 3: 180}  # Mapping of sensor numbers to motor angles
 
 servo_min_duty = 3  # Set the minimum duty cycle to 3
 servo_max_duty = 12  # Set the maximum duty cycle to 12
+probability = predict_probability(FILE_PATH[0], TODAY.month, TODAY.day)
+pre_t, pre_h = predict_weather(FILE_PATH[1], TODAY.month, TODAY.day)
 
 
 def initialize_gpio():
@@ -111,10 +116,10 @@ def check_sensor_conditions():
                     f"Sensor {i + 1} meets the condition - Temp: {temperature_c:.1f} C, Humidity: {humidity}%"
                 )
 
-            if temperature_c >= 25 and humidity >= 20:
+            if temperature_c >= pre_t and humidity >= pre_h:
                 triggered_sensors.append(i + 1)
-            else:
-                pass
+            elif probability >= 89:
+                triggered_sensors.append(i + 1)
 
         except RuntimeError as error:
             # Handle sensor errors

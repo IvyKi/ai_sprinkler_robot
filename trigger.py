@@ -27,8 +27,9 @@ def predict_weather(file_path, month, day):
 
 
 if __name__ == '__main__':
-    probability = predict_probability(FILE_PATH[0])
+    TODAY = dt.datetime.today()
+    probability = predict_probability(FILE_PATH[0], TODAY.month, TODAY.day)
     print(probability)
 
-    temperature, humidity = predict_weather(FILE_PATH[1])
+    temperature, humidity = predict_weather(FILE_PATH[1], TODAY.month, TODAY.day)
     print(temperature, humidity)

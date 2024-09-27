@@ -1,4 +1,7 @@
-import RPi.GPIO as GPIO
+try:
+    import RPi.GPIO as GPIO  # Import Raspberry Pi GPIO module
+except ImportError:
+    from mock_gpio import GPIO  # Import mock GPIO module
 import time
 
 # GPIO pin setup

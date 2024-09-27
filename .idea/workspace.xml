@@ -5,11 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3382586a-ea2c-4def-94f9-9a34907ac51a" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/setting.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/ai_sprinkler_robot.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/ai_sprinkler_robot.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/communication.py" beforeDir="false" afterPath="$PROJECT_DIR$/communication.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/compare.py" beforeDir="false" afterPath="$PROJECT_DIR$/compare.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/compare.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/setting.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test_pump.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_pump.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/trigger.py" beforeDir="false" afterPath="$PROJECT_DIR$/trigger.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/trigger_old_version.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,32 +43,32 @@
     <option name="sortByType" value="true" />
     <option name="sortKey" value="BY_TYPE" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Python tests.Doctests in trigger.executor": "Run",
-    "Python tests.Python tests for test_led.TestLED.test_led_control.executor": "Run",
-    "Python tests.Python tests in test_app.py.executor": "Run",
-    "Python tests.Python tests in test_led.py.executor": "Run",
-    "Python.ML_data1.executor": "Run",
-    "Python.ML_data2.executor": "Run",
-    "Python.app.executor": "Run",
-    "Python.communication.executor": "Run",
-    "Python.compare.executor": "Run",
-    "Python.crawler_fireagency.executor": "Run",
-    "Python.led.executor": "Run",
-    "Python.ml_data1.executor": "Run",
-    "Python.ml_data11.executor": "Run",
-    "Python.ml_data2.executor": "Run",
-    "Python.mock_adafruit.executor": "Run",
-    "Python.test_app.executor": "Run",
-    "Python.trigger.executor": "Run",
-    "Python.trigger_advanced.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "feature-week2",
-    "last_opened_file_path": "C:/Users/hp/Desktop/ai_sprinkler_robot",
-    "settings.editor.selected.configurable": "inlay.hints"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python tests.Doctests in trigger.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_led.TestLED.test_led_control.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests in test_app.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests in test_led.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python.ML_data1.executor&quot;: &quot;Run&quot;,
+    &quot;Python.ML_data2.executor&quot;: &quot;Run&quot;,
+    &quot;Python.app.executor&quot;: &quot;Run&quot;,
+    &quot;Python.communication.executor&quot;: &quot;Run&quot;,
+    &quot;Python.compare.executor&quot;: &quot;Run&quot;,
+    &quot;Python.crawler_fireagency.executor&quot;: &quot;Run&quot;,
+    &quot;Python.led.executor&quot;: &quot;Run&quot;,
+    &quot;Python.ml_data1.executor&quot;: &quot;Run&quot;,
+    &quot;Python.ml_data11.executor&quot;: &quot;Run&quot;,
+    &quot;Python.ml_data2.executor&quot;: &quot;Run&quot;,
+    &quot;Python.mock_adafruit.executor&quot;: &quot;Run&quot;,
+    &quot;Python.test_app.executor&quot;: &quot;Run&quot;,
+    &quot;Python.trigger.executor&quot;: &quot;Run&quot;,
+    &quot;Python.trigger_advanced.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feature-week2&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/hp/Desktop/ai_sprinkler_robot&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;inlay.hints&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\hp\Desktop\ai_sprinkler_robot" />
