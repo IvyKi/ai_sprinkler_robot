@@ -173,71 +173,82 @@ def predict_weather(file_path, month, day):
 def check_sensor_conditions():
     weather_triggered_sensors = []
     day_triggered_sensors = []
-    # for i, pin in enumerate(SENSOR_PINS):
-    #     try:
-    #         dht_device = dht_sensors[pin]
-    #         temperature_c = dht_device.temperature
-    #         humidity = dht_device.humidity
-    #         trigger = False
+    for i, pins in enumerate(SENSOR_PINS):
+        try:
+            dht_device = dht_sensors[pins]
+            temperature_c = dht_device.temperature
+            humidity = dht_device.humidity
+            trigger = False
+
+            safe_print(
+                    f"Sensor {i + 1} meets the condition - Temp: {temperature_c:.1f} C, Humidity: {humidity}%"
+            )
+            if temperature_c >= pre_t and humidity >= pre_h:
+                weather_triggered_sensors.append(i + 1)
+                trigger = True
+            elif probability >= 89:
+                day_triggered_sensors.append(i + 1)
+                trigger = True
+
+            send_to_supabase(i + 1, temperature_c, humidity, trigger)
+
+        except RuntimeError as error:
+            # Handle sensor errors
+            safe_print(error.args[0])
+        time.sleep(5.0)
     #
-    #         safe_print(
-    #                 f"Sensor {i + 1} meets the condition - Temp: {temperature_c:.1f} C, Humidity: {humidity}%"
-    #         )
-    #         if temperature_c >= pre_t and humidity >= pre_h:
-    #             weather_triggered_sensors.append(i + 1)
-    #             trigger = True
-    #         elif probability >= 89:
-    #             day_triggered_sensors.append(i + 1)
-    #             trigger = True
-    #
-    #         send_to_supabase(i + 1, temperature_c, humidity, trigger)
-    #
-    #     except RuntimeError as error:
-    #         # Handle sensor errors
-    #         safe_print(error.args[0])
+    # try:
+    #     dht_device1 = dht_sensors[0]
+    #     temp1 = dht_device1.temperature
+    #     hum1 = dht_device1.humidity
+    #     trigger1 = False
+    #     safe_print(f"Sensor 1 meents the condition - Temp: {temp1:.1f} C, Humidity: {hum1:.1f}")
+    #     if temp1 >= pre_t and hum1 >= pre_h:
+    #         weather_triggered_sensors.append(1)
+    #         trigger1 = True
+    #     elif probability >= 89:
+    #         day_triggered_sensors.append(1)
+    #         trigger1 = True
+    #     else:
+    #         pass
+    #     send_to_supabase(1, temp1, hum1, trigger1)
     #     time.sleep(5.0)
-
-    dht_device1 = dht_sensors[0]
-    temp1 = dht_device1.temperature
-    hum1 = dht_device1.humidity
-    trigger1 = False
-    safe_print(f"Sensor 1 meents the condition - Temp: {temp1:.1f} C, Humidity: {hum1:.1f}")
-    if temp1 >= pre_t and hum1 >= pre_h:
-        weather_triggered_sensors.append(1)
-        trigger1 = True
-    elif probability >= 89:
-        day_triggered_sensors.append(1)
-        trigger1 = True
-    send_to_supabase(1, temp1, hum1, trigger1)
-    time.sleep(5.0)
-
-    dht_device2 = dht_sensors[1]
-    temp2 = dht_device2.temperature
-    hum2 = dht_device2.humidity
-    trigger2 = False
-    safe_print(f"Sensor 1 meents the condition - Temp: {temp2:.1f} C, Humidity: {hum2:.1f}")
-    if temp2 >= pre_t and hum2 >= pre_h:
-        weather_triggered_sensors.append(2)
-        trigger2 = True
-    elif probability >= 89:
-        day_triggered_sensors.append(2)
-        trigger2 = True
-    send_to_supabase(2, temp2, hum2, trigger2)
-    time.sleep(5.0)
-
-    dht_device3 = dht_sensors[2]
-    temp3 = dht_device3.temperature
-    hum3 = dht_device3.humidity
-    trigger3 = False
-    safe_print(f"Sensor 1 meents the condition - Temp: {temp3:.1f} C, Humidity: {hum3:.1f}")
-    if temp3 >= pre_t and hum3 >= pre_h:
-        weather_triggered_sensors.append(3)
-        trigger3 = True
-    elif probability >= 89:
-        day_triggered_sensors.append(3)
-        trigger3 = True
-    send_to_supabase(3, temp3, hum3, trigger3)
-    time.sleep(5.0)
+    #
+    #     dht_device2 = dht_sensors[1]
+    #     temp2 = dht_device2.temperature
+    #     hum2 = dht_device2.humidity
+    #     trigger2 = False
+    #     safe_print(f"Sensor 1 meents the condition - Temp: {temp2:.1f} C, Humidity: {hum2:.1f}")
+    #     if temp2 >= pre_t and hum2 >= pre_h:
+    #         weather_triggered_sensors.append(2)
+    #         trigger2 = True
+    #     elif probability >= 89:
+    #         day_triggered_sensors.append(2)
+    #         trigger2 = True
+    #     else:
+    #         pass
+    #     send_to_supabase(2, temp2, hum2, trigger2)
+    #     time.sleep(5.0)
+    #
+    #     dht_device3 = dht_sensors[2]
+    #     temp3 = dht_device3.temperature
+    #     hum3 = dht_device3.humidity
+    #     trigger3 = False
+    #     safe_print(f"Sensor 1 meents the condition - Temp: {temp3:.1f} C, Humidity: {hum3:.1f}")
+    #     if temp3 >= pre_t and hum3 >= pre_h:
+    #         weather_triggered_sensors.append(3)
+    #         trigger3 = True
+    #     elif probability >= 89:
+    #         day_triggered_sensors.append(3)
+    #         trigger3 = True
+    #     else:
+    #         pass
+    #     send_to_supabase(3, temp3, hum3, trigger3)
+    #     time.sleep(5.0)
+    #
+    # except RuntimeError as error:
+    #     safe_print(error.args[0])
+    # time.sleep(5.0)
 
     return weather_triggered_sensors, day_triggered_sensors
 
@@ -270,8 +281,6 @@ def motor_angle(sensor_list):
         safe_print(f"Moving motor to {target_angle}° for sensor {sensor_number}")
         set_servo_angle(target_angle)  # Move motor to the target angle
         time.sleep(1)
-
-
 
 
 def log_action(temp, humi, sensor_num):
