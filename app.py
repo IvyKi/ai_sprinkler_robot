@@ -335,7 +335,7 @@ def read_from_supabase():
 
 #####
 # Pins for each sensor
-SENSOR_PINS = [4, 17, 27]  # DHT22 on GPIO 4, DHT11 on GPIO 17, 27
+SENSOR_PINS = [17, 27, 22]  # DHT22 on GPIO 4, DHT11 on GPIO 17, 27
 PUMP = 3  # Pin for the pump
 MOTOR = 10  # Pin for the SG90 motor
 
@@ -357,9 +357,9 @@ FILE_PATH = ['data001.xlsx', 'data002.xlsx']
 
 # Initialize each sensor
 dht_sensors = {
-    SENSOR_PINS[0]: adafruit_dht.DHT22(board.D4, use_pulseio=False),  # DHT22 sensor
-    SENSOR_PINS[1]: adafruit_dht.DHT11(board.D17, use_pulseio=False),  # DHT11 sensor
-    SENSOR_PINS[2]: adafruit_dht.DHT11(board.D27, use_pulseio=False),  # DHT11 sensor
+    SENSOR_PINS[0]: adafruit_dht.DHT22(board.D17, use_pulseio=False),  # DHT22 sensor
+    SENSOR_PINS[1]: adafruit_dht.DHT22(board.D27, use_pulseio=False),  # DHT11 sensor
+    SENSOR_PINS[2]: adafruit_dht.DHT11(board.D22, use_pulseio=False),  # DHT11 sensor
 }
 
 # Updated motor angle dictionary (Sensor 1 -> 0 degrees, Sensor 2 -> 90 degrees, Sensor 3 -> 180 degrees)
