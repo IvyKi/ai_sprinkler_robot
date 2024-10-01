@@ -98,11 +98,7 @@ class PredictProbability:
         return train_test_split(self.x, self.y, test_size=0.2, random_state=42)
 
     def train_model(self):
-        """Train the logistic regression model.
-
-            print(f"Model Accuracy: {accuracy * 100:.2f}%")
-            print("Classification Report:\n", report)
-        """
+        """Train the logistic regression model."""
         self.x_train, self.x_test, self.y_train, self.y_test = self.prepare_data()
         self.model = LogisticRegression(random_state=42)
         self.model.fit(self.x_train, self.y_train)
@@ -129,17 +125,15 @@ class PredictProbability:
 
 def set_servo_angle(degree):
     """Sets the servo motor to a specific angle."""
-    # Ensure the angle is within the range of 0 to 180 degrees
     if degree > 180:
         degree = 180
     elif degree < 0:
         degree = 0
 
-    # Convert degree to duty cycle
     duty = servo_min_duty + (degree * (servo_max_duty - servo_min_duty) / 180.0)
-    servo.ChangeDutyCycle(duty)  # Change the duty cycle
+    servo.ChangeDutyCycle(duty)
     time.sleep(1)  # Give the motor time to move to the position
-    servo.ChangeDutyCycle(0)  # Stop the motor
+    servo.ChangeDutyCycle(0)
 
 
 def safe_print(*args, **kwargs):
@@ -180,9 +174,7 @@ def check_sensor_conditions():
             humidity = dht_device.humidity
             trigger = False
 
-            safe_print(
-                    f"Sensor {i + 1} meets the condition - Temp: {temperature_c:.1f} C, Humidity: {humidity}%"
-            )
+            safe_print(f"Sensor {i + 1} meets the condition - Temp: {temperature_c:.1f} C, Humidity: {humidity}%")
             if temperature_c >= pre_t and humidity >= pre_h:
                 weather_triggered_sensors.append(i + 1)
                 trigger = True
@@ -193,7 +185,6 @@ def check_sensor_conditions():
             send_to_supabase(i + 1, temperature_c, humidity, trigger)
 
         except RuntimeError as error:
-            # Handle sensor errors
             safe_print(error.args[0])
         time.sleep(5.0)
 
@@ -221,189 +212,83 @@ def send_to_supabase(sensor_num, temp, humi, trig):
         print(f"Failed to send data to {TABLE_NAME[sensor_num]}: {response.text}")
 
 
-def motor_angle(sensor_list):
-    # Sort the sensor list to ensure it processes in the order 1, 2, 3
+def motor_angle_and_pump(sensor_list):
+    """Move the servo motor to each sensor position and operate the pump."""
     for sensor_number in sorted(sensor_list):
-        target_angle = dictionary[sensor_number]  # Get the target angle corresponding to the sensor number
+        target_angle = dictionary[sensor_number]
         safe_print(f"Moving motor to {target_angle}° for sensor {sensor_number}")
-        set_servo_angle(target_angle)  # Move motor to the target angle
+
+        set_servo_angle(target_angle)
         time.sleep(1)
 
-
-def log_action(temp, humi, sensor_num):
-    url = f"{API_URL}/rest/v1/action_log"
-    headers = {
-        "Content-Type": "application/json",
-        "apikey": API_KEY,
-        "Authorization": f"Bearer {API_KEY}",
-    }
-    payload = {
-        "day": str(dt.datetime.today().date()),
-        "time": str(dt.datetime.today().time()),
-        "temperature": temp,
-        "humidity": humi,
-        "sensor_num": sensor_num,
-    }
-    response = requests.post(url, headers=headers, data=json.dumps(payload))
-    if response.status_code == 201:
-        print(f"Action logged for sensor {sensor_num}")
-    else:
-        print(f"Failed to log action for sensor {sensor_num}: {response.text}")
-
-
-def read_from_supabase():
-    action_sensors = []
-
-    url = f"{API_URL}/rest/v1/{TABLE_NAME[0]}"
-    headers = {
-        "apikey": API_KEY,  # Assuming your API key is stored in s.API_KEY
-        "Authorization": f"Bearer {API_KEY}",
-    }
-    response = requests.get(url, headers=headers)
-
-    if response.status_code != 200:
-        print(f"Error: Unable to fetch data. Status code: {response.status_code}")
-        return []
-
-    data = response.json()
-    sensor_initials = {
-        'sensor_A': 1,
-        'sensor_B': 2,
-        'sensor_C': 3
-    }
-
-    for row in data:
-        for sensor, initial in sensor_initials.items():
-            if row.get(sensor):
-                action_sensors.append(initial)
-
-    return action_sensors
-
-
-def read_from_supabase2():
-    action_sensors = []
-
-    url = f"{API_URL}/rest/v1/{TABLE_NAME[0]}"  # TABLE_NAME[0] refers to the 'action' table
-    headers = {
-        "apikey": API_KEY,
-        "Authorization": f"Bearer {API_KEY}",
-    }
-
-    # Modify the query to order by 'id' (or the relevant timestamp column) and limit to 1 row
-    params = {
-        "order": "id.desc",  # Orders by the 'id' column in descending order
-        "limit": "1"  # Retrieves only the latest row
-    }
-
-    response = requests.get(url, headers=headers, params=params)
-
-    if response.status_code != 200:
-        print(f"Error: Unable to fetch data. Status code: {response.status_code}")
-        return []
-
-    data = response.json()
-
-    # Assuming you are interested in some sensor-related columns
-    sensor_initials = {
-        'sensor_A': 1,
-        'sensor_B': 2,
-        'sensor_C': 3
-    }
-
-    # Extract sensor information from the latest row
-    if data:
-        latest_row = data[0]  # Since we limited the results to 1, the latest row is the first item in the list
-        for sensor, initial in sensor_initials.items():
-            if latest_row.get(sensor):
-                action_sensors.append(initial)
-
-    return action_sensors
+        GPIO.output(PUMP, GPIO.HIGH)  # Turn pump on
+        safe_print(f"Pump is ON for sensor {sensor_number}")
+        time.sleep(3)  # Keep the pump on for 3 seconds
+        GPIO.output(PUMP, GPIO.LOW)  # Turn pump off
+        safe_print(f"Pump is OFF for sensor {sensor_number}")
 
 
 #####
-# Pins for each sensor
-SENSOR_PINS = [17, 27, 22]  # DHT22 on GPIO 4, DHT11 on GPIO 17, 27
-PUMP = 3  # Pin for the pump
-MOTOR = 10  # Pin for the SG90 motor
+# Initialization settings
+SENSOR_PINS = [17, 27, 22]
+PUMP = 3
+MOTOR = 10
 
-# Supabase RESTful API URL
 API_URL = "https://yscyyvxduwdfjldjnwus.supabase.co"
-# Supabase project API key
-API_KEY = (
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+API_KEY = ("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
     ".eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl"
     "zY3l5dnhkdXdkZmpsZGpud3VzIiwicm9sZSI"
     "6ImFub24iLCJpYXQiOjE3MjIwNjYxMTQsImV"
     "4cCI6MjAzNzY0MjExNH0.22vV2RlrW9TU92Y"
-    "79SzuOQKX8v8IISBcaHePht-43Q4"
-)
-# Supabase table names
-TABLE_NAME = ["action", "sprinkler_get1", "sprinkler_get2", "sprinkler_get3"]
+    "79SzuOQKX8v8IISBcaHePht-43Q4")
+TABLE_NAME = ["action_log", "sprinkler_get1", "sprinkler_get2", "sprinkler_get3"]
 TODAY = dt.datetime.today()
 FILE_PATH = ['data001.xlsx', 'data002.xlsx']
 
-# Initialize each sensor
 dht_sensors = {
-    SENSOR_PINS[0]: adafruit_dht.DHT22(board.D17, use_pulseio=False),  # DHT22 sensor
-    SENSOR_PINS[1]: adafruit_dht.DHT22(board.D27, use_pulseio=False),  # DHT11 sensor
-    SENSOR_PINS[2]: adafruit_dht.DHT11(board.D22, use_pulseio=False),  # DHT11 sensor
+    SENSOR_PINS[0]: adafruit_dht.DHT22(board.D17, use_pulseio=False),
+    SENSOR_PINS[1]: adafruit_dht.DHT22(board.D27, use_pulseio=False),
+    SENSOR_PINS[2]: adafruit_dht.DHT11(board.D22, use_pulseio=False),
 }
 
-# Updated motor angle dictionary (Sensor 1 -> 0 degrees, Sensor 2 -> 90 degrees, Sensor 3 -> 180 degrees)
-dictionary = {1: 0, 2: 90, 3: 180}  # Mapping of sensor numbers to motor angles
+dictionary = {1: 180, 2: 90, 3: 0}
 
-servo_min_duty = 3  # Set the minimum duty cycle to 3
-servo_max_duty = 12  # Set the maximum duty cycle to 12
+servo_min_duty = 3
+servo_max_duty = 12
 probability = predict_probability(FILE_PATH[0], TODAY.month, TODAY.day)
 pre_t, pre_h = predict_weather(FILE_PATH[1], TODAY.month, TODAY.day)
 
-# Initialize GPIO pins
-GPIO.cleanup()  # Clean up all GPIO ports
-GPIO.setmode(GPIO.BCM)  # Set GPIO pin numbering mode to BCM
+GPIO.cleanup()
+GPIO.setmode(GPIO.BCM)
 
-# Initialize each pin in SENSOR_PINS
 for pin in SENSOR_PINS:
-    GPIO.setup(pin, GPIO.IN)  # Set each SENSOR pin as input
+    GPIO.setup(pin, GPIO.IN)
 
-GPIO.setup(PUMP, GPIO.OUT)  # Set PUMP pin as output
-GPIO.setup(MOTOR, GPIO.OUT)  # Set MOTOR pin as output
-servo = GPIO.PWM(MOTOR, 50)  # Set MOTOR pin to PWM mode with 50Hz frequency
-servo.start(0)  # Initialize PWM with a duty cycle of 0
+GPIO.setup(PUMP, GPIO.OUT)
+GPIO.setup(MOTOR, GPIO.OUT)
+servo = GPIO.PWM(MOTOR, 50)
+servo.start(0)
 
-
-atexit.register(GPIO.cleanup)  # Ensure GPIO is cleaned up when the program exits
+atexit.register(GPIO.cleanup)
 
 try:
     while True:
         weather_trigger, day_trigger = check_sensor_conditions()
-        action_trigger = read_from_supabase2()
+        set_servo_angle(0)
 
         if weather_trigger:
-            motor_angle(weather_trigger)
-            GPIO.output(PUMP, GPIO.HIGH)  # Turn pump on if weather conditions are satisfied
-            safe_print(f"Weather: Sensor {weather_trigger} satisfied. Pump is ON.")
-            time.sleep(3)  # Keep the pump on for 3 seconds
-            GPIO.output(PUMP, GPIO.LOW)  # Turn pump off
+            motor_angle_and_pump(weather_trigger)
+            safe_print(f"Weather: Sensor {weather_trigger} satisfied and Pump operated.")
 
         if day_trigger:
-            motor_angle(day_trigger)
-            GPIO.output(PUMP, GPIO.HIGH)  # Turn pump on if day conditions are satisfied
-            safe_print(f"Day: Sensor {day_trigger} satisfied. Pump is ON.")
-            time.sleep(3)  # Keep the pump on for 3 seconds
-            GPIO.output(PUMP, GPIO.LOW)  # Turn pump off
+            motor_angle_and_pump(day_trigger)
+            safe_print(f"Day: Sensor {day_trigger} satisfied and Pump operated.")
 
-        if action_trigger:
-            motor_angle(action_trigger)
-            GPIO.output(PUMP, GPIO.HIGH)  # Turn pump on if day conditions are satisfied
-            safe_print(f"Day: Sensor {action_trigger} satisfied. Pump is ON.")
-            time.sleep(3)  # Keep the pump on for 3 seconds
-            GPIO.output(PUMP, GPIO.LOW)  # Turn pump off
-
-        else:
+        if not weather_trigger and not day_trigger:
             safe_print("No sensor satisfied the condition. Pump remains OFF.")
 
         time.sleep(1)
 
-finally:  # This block is executed when the try block exits
-    servo.stop()  # Stop PWM safely
-    GPIO.cleanup()  # Clean up GPIO settings
+finally:
+    servo.stop()
+    GPIO.cleanup()
