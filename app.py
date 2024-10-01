@@ -196,59 +196,6 @@ def check_sensor_conditions():
             # Handle sensor errors
             safe_print(error.args[0])
         time.sleep(5.0)
-    #
-    # try:
-    #     dht_device1 = dht_sensors[0]
-    #     temp1 = dht_device1.temperature
-    #     hum1 = dht_device1.humidity
-    #     trigger1 = False
-    #     safe_print(f"Sensor 1 meents the condition - Temp: {temp1:.1f} C, Humidity: {hum1:.1f}")
-    #     if temp1 >= pre_t and hum1 >= pre_h:
-    #         weather_triggered_sensors.append(1)
-    #         trigger1 = True
-    #     elif probability >= 89:
-    #         day_triggered_sensors.append(1)
-    #         trigger1 = True
-    #     else:
-    #         pass
-    #     send_to_supabase(1, temp1, hum1, trigger1)
-    #     time.sleep(5.0)
-    #
-    #     dht_device2 = dht_sensors[1]
-    #     temp2 = dht_device2.temperature
-    #     hum2 = dht_device2.humidity
-    #     trigger2 = False
-    #     safe_print(f"Sensor 1 meents the condition - Temp: {temp2:.1f} C, Humidity: {hum2:.1f}")
-    #     if temp2 >= pre_t and hum2 >= pre_h:
-    #         weather_triggered_sensors.append(2)
-    #         trigger2 = True
-    #     elif probability >= 89:
-    #         day_triggered_sensors.append(2)
-    #         trigger2 = True
-    #     else:
-    #         pass
-    #     send_to_supabase(2, temp2, hum2, trigger2)
-    #     time.sleep(5.0)
-    #
-    #     dht_device3 = dht_sensors[2]
-    #     temp3 = dht_device3.temperature
-    #     hum3 = dht_device3.humidity
-    #     trigger3 = False
-    #     safe_print(f"Sensor 1 meents the condition - Temp: {temp3:.1f} C, Humidity: {hum3:.1f}")
-    #     if temp3 >= pre_t and hum3 >= pre_h:
-    #         weather_triggered_sensors.append(3)
-    #         trigger3 = True
-    #     elif probability >= 89:
-    #         day_triggered_sensors.append(3)
-    #         trigger3 = True
-    #     else:
-    #         pass
-    #     send_to_supabase(3, temp3, hum3, trigger3)
-    #     time.sleep(5.0)
-    #
-    # except RuntimeError as error:
-    #     safe_print(error.args[0])
-    # time.sleep(5.0)
 
     return weather_triggered_sensors, day_triggered_sensors
 
@@ -333,6 +280,46 @@ def read_from_supabase():
     return action_sensors
 
 
+def read_from_supabase2():
+    action_sensors = []
+
+    url = f"{API_URL}/rest/v1/{TABLE_NAME[0]}"  # TABLE_NAME[0] refers to the 'action' table
+    headers = {
+        "apikey": API_KEY,
+        "Authorization": f"Bearer {API_KEY}",
+    }
+
+    # Modify the query to order by 'id' (or the relevant timestamp column) and limit to 1 row
+    params = {
+        "order": "id.desc",  # Orders by the 'id' column in descending order
+        "limit": "1"  # Retrieves only the latest row
+    }
+
+    response = requests.get(url, headers=headers, params=params)
+
+    if response.status_code != 200:
+        print(f"Error: Unable to fetch data. Status code: {response.status_code}")
+        return []
+
+    data = response.json()
+
+    # Assuming you are interested in some sensor-related columns
+    sensor_initials = {
+        'sensor_A': 1,
+        'sensor_B': 2,
+        'sensor_C': 3
+    }
+
+    # Extract sensor information from the latest row
+    if data:
+        latest_row = data[0]  # Since we limited the results to 1, the latest row is the first item in the list
+        for sensor, initial in sensor_initials.items():
+            if latest_row.get(sensor):
+                action_sensors.append(initial)
+
+    return action_sensors
+
+
 #####
 # Pins for each sensor
 SENSOR_PINS = [17, 27, 22]  # DHT22 on GPIO 4, DHT11 on GPIO 17, 27
@@ -351,7 +338,7 @@ API_KEY = (
     "79SzuOQKX8v8IISBcaHePht-43Q4"
 )
 # Supabase table names
-TABLE_NAME = ["action_log", "sprinkler_get1", "sprinkler_get2", "sprinkler_get3"]
+TABLE_NAME = ["action", "sprinkler_get1", "sprinkler_get2", "sprinkler_get3"]
 TODAY = dt.datetime.today()
 FILE_PATH = ['data001.xlsx', 'data002.xlsx']
 
@@ -389,6 +376,8 @@ atexit.register(GPIO.cleanup)  # Ensure GPIO is cleaned up when the program exit
 try:
     while True:
         weather_trigger, day_trigger = check_sensor_conditions()
+        action_trigger = read_from_supabase2()
+
         if weather_trigger:
             motor_angle(weather_trigger)
             GPIO.output(PUMP, GPIO.HIGH)  # Turn pump on if weather conditions are satisfied
@@ -400,6 +389,13 @@ try:
             motor_angle(day_trigger)
             GPIO.output(PUMP, GPIO.HIGH)  # Turn pump on if day conditions are satisfied
             safe_print(f"Day: Sensor {day_trigger} satisfied. Pump is ON.")
+            time.sleep(3)  # Keep the pump on for 3 seconds
+            GPIO.output(PUMP, GPIO.LOW)  # Turn pump off
+
+        if action_trigger:
+            motor_angle(action_trigger)
+            GPIO.output(PUMP, GPIO.HIGH)  # Turn pump on if day conditions are satisfied
+            safe_print(f"Day: Sensor {action_trigger} satisfied. Pump is ON.")
             time.sleep(3)  # Keep the pump on for 3 seconds
             GPIO.output(PUMP, GPIO.LOW)  # Turn pump off
 
