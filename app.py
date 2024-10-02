@@ -175,7 +175,7 @@ def check_sensor_conditions():
             trigger = False
 
             safe_print(f"Sensor {i + 1} meets the condition - Temp: {temperature_c:.1f} C, Humidity: {humidity}%")
-            if temperature_c >= pre_t and humidity >= pre_h:
+            if temperature_c >= pre_t and humidity <= pre_h:
                 weather_triggered_sensors.append(i + 1)
                 trigger = True
             elif probability >= 89:
@@ -186,7 +186,7 @@ def check_sensor_conditions():
 
         except RuntimeError as error:
             safe_print(error.args[0])
-        time.sleep(5.0)
+        time.sleep(2.0)
 
     return weather_triggered_sensors, day_triggered_sensors
 
@@ -223,7 +223,7 @@ def motor_angle_and_pump(sensor_list):
 
         GPIO.output(PUMP, GPIO.HIGH)  # Turn pump on
         safe_print(f"Pump is ON for sensor {sensor_number}")
-        time.sleep(3)  # Keep the pump on for 3 seconds
+        time.sleep(5)  # Keep the pump on for 3 seconds
         GPIO.output(PUMP, GPIO.LOW)  # Turn pump off
         safe_print(f"Pump is OFF for sensor {sensor_number}")
 
@@ -246,7 +246,7 @@ TODAY = dt.datetime.today()
 FILE_PATH = ['data001.xlsx', 'data002.xlsx']
 
 dht_sensors = {
-    SENSOR_PINS[0]: adafruit_dht.DHT22(board.D17, use_pulseio=False),
+    SENSOR_PINS[0]: adafruit_dht.DHT11(board.D17, use_pulseio=False),
     SENSOR_PINS[1]: adafruit_dht.DHT22(board.D27, use_pulseio=False),
     SENSOR_PINS[2]: adafruit_dht.DHT11(board.D22, use_pulseio=False),
 }
